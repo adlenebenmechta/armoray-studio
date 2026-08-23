@@ -142,3 +142,26 @@ Stage Summary:
 - notch-alternative.vercel.app — LIVE, trilingual entry (EN/AR/FR + RTL)
 - armoray-studio.vercel.app — LIVE, multi-window hub with embedded Notch Alternative
 - GitHub: adlenebenmechta/notch-alternative (3 commits: pristine copy → i18n → fixes)
+
+---
+Task ID: 7
+Agent: main
+Task: Deploy notch-alternative on Railway
+
+Work Log:
+- Railway project created via GraphQL API (98acc92a) + PostgreSQL service (working, PGDATA fix)
+  + volume + domains notch-alternative-production/app-production-b84c
+- Deep debugging journey: fixed maxDuration>300 (hobby), bun→node start script,
+  removed conflicting railway.json (was overriding Dockerfile — main killer),
+  NODE_OPTIONS heap cap 700MB, turbopack.root dev-only, HOSTNAME=0.0.0.0
+- Container went from instant-EXITED → RUNNING (progress) but healthcheck still fails
+- Final isolation test: raw node HTTP server (no Next) ALSO fails → trial plan has
+  broken networking (no sockets detected, logs frozen at 'Starting Container',
+  instant 502 with 15s timeout) — platform-level limitation, not app
+- Verified Vercel deployment is fully working (HTTP 200, trilingual, RTL Arabic)
+- Restored production CMD in Dockerfile for future Railway plan upgrade
+
+Stage Summary:
+- LIVE: https://notch-alternative.vercel.app (working, trilingual)
+- Railway: project+DB configured and waiting; needs paid plan for networking to work
+- All fixes committed to GitHub (98c37e1)
