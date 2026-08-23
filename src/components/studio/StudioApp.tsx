@@ -17,12 +17,13 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageProvider";
+import { localeNames } from "@/lib/i18n";
 import AgentChat, { type ProjectData } from "./AgentChat";
 
 type View = "agents" | "projects" | "brand" | "settings";
 
 export default function StudioApp({ onExit }: { onExit: () => void }) {
-  const { dict, locale, setLocale, localeNames } = useLang();
+  const { dict, locale, setLocale } = useLang();
   const s = dict.studio;
 
   const [view, setView] = useState<View>("agents");
@@ -162,7 +163,7 @@ export default function StudioApp({ onExit }: { onExit: () => void }) {
         <div className="p-3 border-t border-zinc-800 space-y-2">
           <div className="flex items-center gap-2 text-xs text-zinc-500 px-1">
             <Globe className="w-3.5 h-3.5" />
-            {s.settings.language}
+            {s.views.settings.language}
           </div>
           <div className="grid grid-cols-3 gap-1">
             {(["ar", "en", "fr"] as const).map((l) => (
