@@ -117,3 +117,28 @@ Work Log:
 Stage Summary:
 - Credit system verified: 1st gen = 3 credits, 2nd/3rd = 0 (isEdit=true)
 - Production deployed and verified: armoray-studio.vercel.app
+
+---
+Task ID: 6
+Agent: main
+Task: Copy avatar-machine project 1:1, add AR/FR, integrate as "Notch Alternative" window
+
+Work Log:
+- Source identified: adlenbenmechta2/my-project ("AI Avatar Machine", 80 API routes,
+  8 machines: Avatar/Carousel/Podcast/BOF/Claymotion/AllInOne/AutoPublish/Scheduler)
+- Full clone (shallow clone was corrupt — full clone fixed), pushed UNTOUCHED as first
+  commit to new repo adlenebenmechta/notch-alternative (new token)
+- i18n layer: src/lib/i18n.ts (EN/AR/FR dicts + useAppLang hook + RTL)
+- MainMenu: 24 strings localized + floating pill switcher (EN/ع/FR) + dir=rtl
+- Deploy #1 failed: auto-chain maxDuration=600 > hobby limit 300 → capped
+- Deploy #2 crashed client-side: t() used in AuthModal/PlansSection without hook → fixed
+  (+ repaired a corrupted 'mounted' state line)
+- Final deploy verified: switcher works, Arabic renders RTL on production
+- Armoray Studio: apps hub section (Notch Alternative + Armoray cards) on landing,
+  'Notch Alternative' window with full-screen iframe in studio sidebar (verified 1144x836)
+- Both projects deployed and verified on Vercel
+
+Stage Summary:
+- notch-alternative.vercel.app — LIVE, trilingual entry (EN/AR/FR + RTL)
+- armoray-studio.vercel.app — LIVE, multi-window hub with embedded Notch Alternative
+- GitHub: adlenebenmechta/notch-alternative (3 commits: pristine copy → i18n → fixes)
