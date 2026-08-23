@@ -72,6 +72,20 @@ export const en: Dictionary = {
       { title: "Company", links: ["About", "Careers", "Privacy", "Terms"] },
     ],
   },
+  appsHub: {
+    sectionTitle: "Our Smart Platforms",
+    sectionSub: "Multiple windows inside your ecosystem — pick your tool",
+    notchTitle: "Notch Alternative — All-in-One Avatar Machine",
+    notchDesc: "8 machines in one: talking avatars, viral carousels, podcasts, bulk product videos, claymotion, all-in-one suite, TikTok auto-publish and smart scheduling — now in Arabic and French too.",
+    open: "Open platform",
+    inside: "Open inside studio",
+    badge: "NEW",
+    hub: "Notch Alternative",
+    hubDesc: "The complete avatar-video ecosystem (8 machines) — the full Notch alternative",
+    openNewTab: "Open in new tab",
+    backToStudio: "Back to studio",
+    loading: "Loading platform…",
+  },
   studio: {
     sidebar: { newProject: "New project", agents: "Agents", projects: "Projects", brand: "Brand Brain", settings: "Settings", backToSite: "Back to site" },
     chat: {

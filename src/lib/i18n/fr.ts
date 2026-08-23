@@ -72,6 +72,20 @@ export const fr: Dictionary = {
       { title: "Entreprise", links: ["À propos", "Carrières", "Confidentialité", "CGU"] },
     ],
   },
+  appsHub: {
+    sectionTitle: "Nos plateformes intelligentes",
+    sectionSub: "Plusieurs fenêtres dans votre écosystème — choisissez votre outil",
+    notchTitle: "Alternative Notch — Machine Avatar tout-en-un",
+    notchDesc: "8 machines en une : avatars parlants, carrousels viraux, podcasts, vidéos produits en masse, claymotion, suite tout-en-un, publication TikTok automatique et planification intelligente — maintenant en arabe et français.",
+    open: "Ouvrir la plateforme",
+    inside: "Ouvrir dans le studio",
+    badge: "NOUVEAU",
+    hub: "Alternative Notch",
+    hubDesc: "L'écosystème complet de vidéos avatar (8 machines) — l'alternative complète à Notch",
+    openNewTab: "Ouvrir dans un onglet",
+    backToStudio: "Retour au studio",
+    loading: "Chargement de la plateforme…",
+  },
   studio: {
     sidebar: { newProject: "Nouveau projet", agents: "Agents", projects: "Projets", brand: "Cerveau de Marque", settings: "Réglages", backToSite: "Retour au site" },
     chat: {

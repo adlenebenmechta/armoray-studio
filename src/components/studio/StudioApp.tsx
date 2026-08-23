@@ -16,12 +16,14 @@ import {
   Globe,
   Sparkles,
   Zap,
+  Layers,
+  ExternalLink,
 } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageProvider";
 import { localeNames } from "@/lib/i18n";
 import AgentChat, { type ProjectData } from "./AgentChat";
 
-type View = "agents" | "projects" | "brand" | "settings";
+type View = "agents" | "projects" | "brand" | "settings" | "notch-alt";
 
 export default function StudioApp({ onExit }: { onExit: () => void }) {
   const { dict, locale, setLocale } = useLang();
@@ -121,6 +123,7 @@ export default function StudioApp({ onExit }: { onExit: () => void }) {
     { key: "projects", icon: <FolderOpen className="w-4 h-4" />, label: s.sidebar.projects },
     { key: "brand", icon: <Brain className="w-4 h-4" />, label: s.sidebar.brand },
     { key: "settings", icon: <SettingsIcon className="w-4 h-4" />, label: s.sidebar.settings },
+    { key: "notch-alt", icon: <Layers className="w-4 h-4" />, label: dict.appsHub.hub },
   ];
 
   return (
@@ -312,6 +315,40 @@ export default function StudioApp({ onExit }: { onExit: () => void }) {
   );
 }
 
+function NotchAltView() {
+  const { dict } = useLang();
+  const a = dict.appsHub;
+  return (
+    <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex items-center gap-3 h-16 px-4 md:px-6 border-b border-border bg-sidebar/60">
+        <Layers className="w-4 h-4 shrink-0" style={{ color: "#593dfa" }} />
+        <span className="text-sm font-bold truncate">{a.hub}</span>
+        <Badge variant="outline" className="text-[11px] rounded-full border-border text-muted-foreground shrink-0">
+          {a.badge}
+        </Badge>
+        <Button
+          variant="outline"
+          size="sm"
+          className="btn-pill ms-auto h-9 bg-card border-border shrink-0"
+          onClick={() => window.open("https://notch-alternative.vercel.app", "_blank")}
+        >
+          <ExternalLink className="w-3.5 h-3.5 me-1.5" />
+          <span className="hidden sm:inline">{a.openNewTab}</span>
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0 bg-background">
+        <iframe
+          src="https://notch-alternative.vercel.app"
+          title={a.hub}
+          className="w-full h-full border-0"
+          allow="camera; microphone; clipboard-read; clipboard-write; fullscreen"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-downloads"
+        />
+      </div>
+    </div>
+  );
+}
+
 function ChatStatusLabel({ status }: { status: string }) {
   const { dict } = useLang();
   const st = dict.studio.status as Record<string, string>;
@@ -442,6 +479,10 @@ function MainView({
         </Card>
       </div>
     );
+  }
+
+  if (view === "notch-alt") {
+    return <NotchAltView />;
   }
 
   // settings

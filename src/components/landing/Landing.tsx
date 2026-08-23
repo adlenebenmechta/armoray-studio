@@ -18,6 +18,8 @@ import {
   Bot,
   Camera,
   Scissors,
+  Layers,
+  ExternalLink,
 } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageProvider";
 
@@ -228,6 +230,60 @@ export default function Landing({ onEnter }: { onEnter: () => void }) {
                 <MessageSquare className="w-5 h-5 me-2" />
                 {t.nav.getStarted}
               </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* apps hub — multiple windows (Notch Alternative + more) */}
+        <section id="apps" className="border-t border-border/60 bg-card/50">
+          <div className="max-w-6xl mx-auto px-4 md:px-6 py-16 md:py-24">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">{t.appsHub.sectionTitle}</h2>
+              <p className="text-muted-foreground mt-3 max-w-xl mx-auto">{t.appsHub.sectionSub}</p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+              {/* Notch Alternative card */}
+              <div className="relative rounded-2xl bg-card border border-border p-7 md:p-8 hover:shadow-[0_12px_50px_rgba(0,0,0,0.08)] transition-shadow">
+                <Badge className="absolute -top-3 start-6 rounded-full bg-gradient-to-r from-[#593dfa] to-[#c026d3] text-white font-bold hover:bg-gradient-to-r hover:from-[#593dfa] hover:to-[#c026d3]">
+                  {t.appsHub.badge}
+                </Badge>
+                <div className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center text-white bg-gradient-to-br from-[#E461AD] to-[#9AFF01]">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <h3 className="font-extrabold text-lg mb-2 leading-snug">{t.appsHub.notchTitle}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6">{t.appsHub.notchDesc}</p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    onClick={() => window.open("https://notch-alternative.vercel.app", "_blank")}
+                    className="btn-pill h-11 bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    {t.appsHub.open}
+                    <ExternalLink className="w-4 h-4 ms-1.5" />
+                  </Button>
+                  <Button
+                    onClick={onEnter}
+                    variant="outline"
+                    className="btn-pill h-11 bg-card border-border hover:bg-accent"
+                  >
+                    {t.appsHub.inside}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Armoray Studio card (this platform) */}
+              <div className="rounded-2xl bg-card border border-border p-7 md:p-8 hover:shadow-[0_12px_50px_rgba(0,0,0,0.08)] transition-shadow">
+                <div
+                  className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center text-white"
+                  style={{ background: "linear-gradient(135deg,#593dfa,#2563eb)" }}
+                >
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <h3 className="font-extrabold text-lg mb-2 leading-snug">{t.hero.titleA} — {t.hero.titleB}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6">{t.hero.subtitle}</p>
+                <Button onClick={onEnter} className="btn-pill h-11 bg-primary text-primary-foreground hover:bg-primary/90">
+                  {t.hero.ctaPrimary}
+                </Button>
+              </div>
             </div>
           </div>
         </section>

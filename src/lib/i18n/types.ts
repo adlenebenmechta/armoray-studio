@@ -30,6 +30,13 @@ export interface Dictionary {
     }[];
   };
   footer: { tagline: string; rights: string; cols: { title: string; links: string[] }[] };
+  appsHub: {
+    sectionTitle: string; sectionSub: string;
+    notchTitle: string; notchDesc: string;
+    open: string; inside: string; badge: string;
+    hub: string; hubDesc: string;
+    openNewTab: string; backToStudio: string; loading: string;
+  };
   studio: {
     sidebar: { newProject: string; agents: string; projects: string; brand: string; settings: string; backToSite: string };
     chat: {
