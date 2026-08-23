@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  status        String   @default("chat")
+  locale        String   @default("ar")
+  refVideoName  String?
+  refDuration   Float?
+  refTranscript String?
+  refAnalysis   String?
+  productName   String?
+  productUrl    String?
+  productDesc   String?
+  productImage  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  messages      Message[]
+  scenes        Scene[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      String
+  content   String
+  kind      String   @default("text")
+  meta      String?
+  createdAt DateTime @default(now())
+}
+
+model Scene {
+  id            String  @id @default(cuid())
+  projectId     String
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  index         Int
+  description   String
+  camera        String?
+  onScreenText  String?
+  duration      Float   @default(5)
+  isProductScene Boolean @default(false)
+  newPrompt     String?
+  newVoiceover  String?
+  onScreenNew   String?
+  status        String  @default("pending")
+  taskId        String?
+  videoUrl      String?
+  error         String?
+  createdAt     DateTime @default(now())
+}
