@@ -21,9 +21,20 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     const analysis: VideoAnalysis = JSON.parse(project.refAnalysis);
     const localeName = localeNames[project.locale] ?? "English";
 
+    let facts: string[] = [];
+    try {
+      facts = project.productFacts ? JSON.parse(project.productFacts) : [];
+    } catch {}
+
     const adaptation = await adaptScriptForProduct(
       analysis,
-      { name: project.productName, url: project.productUrl, desc: project.productDesc },
+      {
+        name: project.productName,
+        url: project.productUrl,
+        desc: project.productDesc,
+        size: project.productSize,
+        facts,
+      },
       localeName
     );
 

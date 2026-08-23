@@ -8,6 +8,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const name = (body.name || "").toString().slice(0, 200);
     const url = (body.url || "").toString().slice(0, 500) || null;
     const desc = (body.desc || "").toString().slice(0, 3000) || null;
+    const size = (body.size || "").toString().slice(0, 200) || null;
+    const facts = Array.isArray(body.facts)
+      ? body.facts.slice(0, 6).map((f: unknown) => String(f).slice(0, 300)).filter(Boolean)
+      : [];
     const image = typeof body.image === "string" && body.image.startsWith("data:image") ? body.image.slice(0, 3_000_000) : null;
 
     if (!name) return NextResponse.json({ error: "name_required" }, { status: 400 });
@@ -21,6 +25,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         productName: name,
         productUrl: url,
         productDesc: desc,
+        productSize: size,
+        productFacts: facts.length ? JSON.stringify(facts) : null,
         productImage: image ?? project.productImage,
       },
     });

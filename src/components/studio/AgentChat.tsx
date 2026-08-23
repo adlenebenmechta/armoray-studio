@@ -37,6 +37,7 @@ import { extractFrames, downscaleImage } from "./media";
 export interface SceneData {
   id: string;
   index: number;
+  role: string;
   description: string;
   camera?: string | null;
   onScreenText?: string | null;
@@ -48,6 +49,7 @@ export interface SceneData {
   status: string;
   videoUrl?: string | null;
   error?: string | null;
+  speechQa?: string | null;
 }
 
 export interface ProjectData {
@@ -79,6 +81,7 @@ interface AnalysisMeta {
   tone: string;
   pacing: string;
   summary: string;
+  format: string;
 }
 
 let msgSeq = 0;
@@ -113,6 +116,8 @@ export default function AgentChat({
   const [pfUrl, setPfUrl] = useState("");
   const [pfDesc, setPfDesc] = useState("");
   const [pfImage, setPfImage] = useState<string | null>(null);
+  const [pfSize, setPfSize] = useState("");
+  const [pfFacts, setPfFacts] = useState("");
 
   const hasVideo = Boolean(project?.refAnalysis);
   const hasProduct = Boolean(project?.productName);
@@ -267,7 +272,14 @@ export default function AgentChat({
       const res = await fetch(`/api/projects/${project.id}/product`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: pfName, url: pfUrl, desc: pfDesc, image: pfImage }),
+        body: JSON.stringify({
+          name: pfName,
+          url: pfUrl,
+          desc: pfDesc,
+          image: pfImage,
+          size: pfSize,
+          facts: pfFacts.split("\n").map((l) => l.trim()).filter(Boolean),
+        }),
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -586,6 +598,16 @@ export default function AgentChat({
                 </Button>
               )}
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="pf-size">{dict.studio.productDialog.sizeLabel}</Label>
+              <Input id="pf-size" value={pfSize} onChange={(e) => setPfSize(e.target.value)} placeholder={dict.studio.productDialog.sizePh} />
+              <p className="text-xs text-muted-foreground">{dict.studio.productDialog.sizeHint}</p>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="pf-facts">{dict.studio.productDialog.factsLabel}</Label>
+              <Textarea id="pf-facts" value={pfFacts} onChange={(e) => setPfFacts(e.target.value)} placeholder={dict.studio.productDialog.factsPh} rows={2} />
+              <p className="text-xs text-muted-foreground">{dict.studio.productDialog.factsHint}</p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setProductOpen(false)} disabled={busy}>
@@ -679,13 +701,44 @@ function ChatMessage({
 function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: SceneData[] }) {
   const { dict } = useLang();
   const c = dict.studio.cards.analysis;
+  const roles = c.roles || {};
+  const totalDur = scenes.reduce((a, s) => a + (s.duration || 0), 0) || 1;
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4 md:p-5 space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Clapperboard className="w-4 h-4 text-emerald-500" />
-          {c.title}
+          {c.xray}
+          {analysis.format && <Badge variant="secondary" className="text-xs">{analysis.format}</Badge>}
         </div>
+
+        {/* timeline map — hook/demo/proof/cta beats with proportional widths */}
+        <div className="flex h-9 rounded-lg overflow-hidden border border-border text-[10px] font-semibold">
+          {scenes.map((s) => {
+            const pct = ((s.duration || 3) / totalDur) * 100;
+            const roleColor: Record<string, string> = {
+              hook: "bg-emerald-500/80 text-zinc-950",
+              demo: "bg-teal-500/70 text-zinc-950",
+              proof: "bg-amber-400/70 text-zinc-950",
+              cta: "bg-orange-500/80 text-zinc-950",
+            };
+            return (
+              <div
+                key={s.id}
+                className={`${roleColor[s.role] || "bg-zinc-600 text-zinc-100"} flex items-center justify-center min-w-0 px-1 truncate`}
+                style={{ width: `${pct}%` }}
+                title={`${roles[s.role] || s.role} · ${Math.round(s.duration)}s`}
+              >
+                {roles[s.role] || s.role}
+              </div>
+            );
+          })}
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {scenes.length} {c.scenes} · {Math.round(totalDur)} {c.seconds} · {c.format}: {analysis.format || "—"}
+        </div>
+
         {analysis.hook && (
           <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
             <div className="text-xs font-semibold text-emerald-500 mb-1">{c.hook}</div>
@@ -725,6 +778,7 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
                   <Badge variant="outline" className="text-xs">
                     {c.scene} {s.index + 1}
                   </Badge>
+                  {s.role && <Badge className="text-xs bg-teal-500/15 text-teal-600 border border-teal-500/30">{roles[s.role] || s.role}</Badge>}
                   <span className="text-xs text-muted-foreground">
                     {Math.round(s.duration)} {c.seconds}
                   </span>
@@ -765,6 +819,7 @@ function StoryboardCard({
 }) {
   const { dict } = useLang();
   const c = dict.studio.cards.storyboard;
+  const roles = c.roles || {};
   const adapted = scenes.filter((s) => s.newPrompt);
   if (!adapted.length) return null;
   const doneCount = adapted.filter((s) => s.status === "done").length;
@@ -792,6 +847,7 @@ function StoryboardCard({
                 <Badge variant="outline" className="text-xs">
                   {dict.studio.cards.analysis.scene} {s.index + 1}
                 </Badge>
+                {s.role && <Badge className="text-xs bg-teal-500/15 text-teal-600 border border-teal-500/30">{roles[s.role] || s.role}</Badge>}
                 {s.isProductScene && (
                   <Badge className="text-xs bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/15">
                     {dict.studio.cards.analysis.productScene}
@@ -835,7 +891,10 @@ function StoryboardCard({
                   </div>
                 )}
                 {s.status === "done" && s.videoUrl && (
-                  <video src={s.videoUrl} controls playsInline className="w-full max-w-[240px] rounded-lg border border-border" />
+                  <>
+                    <video src={s.videoUrl} controls playsInline className="w-full max-w-[240px] rounded-lg border border-border" />
+                    <SpeechQaRow scene={s} />
+                  </>
                 )}
                 {s.status === "error" && <div className="text-xs text-red-500">{c.error}</div>}
               </div>
@@ -900,4 +959,47 @@ function SceneStatusBadge({ status }: { status: string }) {
   if (status === "error")
     return <Badge variant="destructive" className="text-xs">{c.error}</Badge>;
   return <Badge variant="secondary" className="text-xs">{c.pending}</Badge>;
+}
+
+function SpeechQaRow({ scene }: { scene: SceneData }) {
+  const { dict } = useLang();
+  const c = dict.studio.cards.storyboard;
+
+  const qa = (() => {
+    if (!scene.speechQa) return null;
+    try {
+      return JSON.parse(scene.speechQa) as {
+        transcript: string;
+        wordCount: number;
+        pace: number;
+        passed: boolean;
+        issues: string[];
+      };
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!qa) return null;
+
+  return (
+    <div className={`rounded-lg border p-2.5 space-y-1 ${qa.passed ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/40 bg-amber-500/5"}`}>
+      <div className="flex items-center gap-2 flex-wrap text-xs">
+        <Volume2 className="w-3.5 h-3.5 text-emerald-500" />
+        <span className="font-semibold">{c.speechQa}</span>
+        <span className="text-muted-foreground">
+          {qa.wordCount} {c.words} · {qa.pace} {c.wps}
+        </span>
+        <Badge
+          variant="outline"
+          className={`text-[10px] ${qa.passed ? "text-emerald-500 border-emerald-500/40" : "text-amber-500 border-amber-500/40"}`}
+        >
+          {qa.passed ? c.passed : c.failed}
+        </Badge>
+      </div>
+      {qa.transcript && (
+        <p className="text-[11px] text-muted-foreground leading-relaxed">“{qa.transcript}”</p>
+      )}
+    </div>
+  );
 }

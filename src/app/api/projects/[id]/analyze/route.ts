@@ -37,6 +37,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         data: {
           projectId: id,
           index: i,
+          role: s.role || "demo",
           description: s.description,
           camera: s.camera,
           onScreenText: s.onScreenText,

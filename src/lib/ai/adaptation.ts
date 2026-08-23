@@ -19,27 +19,40 @@ export interface AdaptationResult {
 /**
  * Engine 2 — Script Rewriter (the "same video but for MY product" step).
  * Keeps the winning persuasion structure of the reference ad and rebuilds
- * every scene around the user's product.
+ * every scene around the user's product — with Notch's creative guardrails:
+ * ≤15 spoken words per scene, ~3.2 words/second pace, functional beats
+ * preserved (hook/demo/cta), product visual-model facts injected.
  */
 export async function adaptScriptForProduct(
   analysis: VideoAnalysis,
-  product: { name: string; url?: string | null; desc?: string | null },
+  product: {
+    name: string;
+    url?: string | null;
+    desc?: string | null;
+    size?: string | null;
+    facts?: string[];
+  },
   localeName: string
 ): Promise<AdaptationResult> {
   const zai = await ZAI.create();
 
+  const productFactsBlock = product.facts?.length
+    ? `\n- Saved rendering facts (MUST be preserved in every generated scene): ${product.facts.join(" | ")}`
+    : "";
+  const productSizeBlock = product.size ? `\n- Real-world size: ${product.size} (keep the product correctly scaled in hands, rooms and close-ups)` : "";
+
   const prompt = `You are a breakthrough advertising copywriter and prompt engineer for AI video generation.
 
 You are given:
-1) The structural analysis of a WINNING reference video ad:
+1) The structural analysis (reference X-ray) of a WINNING reference video ad:
 ${JSON.stringify(analysis, null, 2)}
 
-2) The user's product:
+2) The user's product (Brand Brain):
 - Name: ${product.name}
 - URL: ${product.url || "not provided"}
-- Description / audience: ${product.desc || "not provided"}
+- Description / audience: ${product.desc || "not provided"}${productSizeBlock}${productFactsBlock}
 
-Your job: recreate the SAME winning structure for the user's product — same persuasion sequence, same pacing, same scene types and same energy — but with all content replaced by the user's product.
+Your job: recreate the SAME winning structure for the user's product — same persuasion sequence, same functional beats (hook → demo → cta), same pacing, same scene types and same energy — but with all content replaced by the user's product.
 
 Respond with STRICT JSON only (no markdown fences, no commentary), with this exact shape:
 {
@@ -51,14 +64,15 @@ Respond with STRICT JSON only (no markdown fences, no commentary), with this exa
       "index": 0,
       "isProductScene": true,
       "newPrompt": "ENGLISH video-generation prompt for this scene rebuilt around the user's product: describe the visuals, the product appearance, camera angle and movement, lighting, style, mood. 25-60 words. Very concrete and filmable. Always feature the user's product.",
-      "newVoiceover": "the new voiceover line for this scene in ${localeName} (match the reference scene's intent and length)",
+      "newVoiceover": "the new voiceover line for this scene in ${localeName} (match the reference scene's intent; MAX 15 words — spoken dialogue must be short and punchy)",
       "onScreenNew": "short punchy on-screen text for this scene in ${localeName} (2-6 words)"
     }
   ]
 }
 
 Rules:
-- One adapted scene per reference scene, same order, same approximate durations.
+- One adapted scene per reference scene, same order, same roles (hook/demo/proof/cta) and same approximate durations.
+- Creative guardrails (these matter): each newVoiceover is at most 15 words; total spoken pace ≈ 3.2 words/second; the whole ad arc stays within the reference total duration.
 - newPrompt MUST be written in English ONLY (the video model works best in English) and MUST prominently feature the user's product. If the product name contains non-Latin characters (Arabic etc.), use its Latin/brand part or a short English translation of it (e.g. "Hydra Glow serum") — NEVER mix Arabic script inside the English prompt.
 - Keep prompts strictly commercial and product-focused: bottles, packaging, textures, drops, splashes, surfaces, lighting, camera moves. AVOID describing human skin, body parts, faces, or people in close-up detail — if the reference scene had people, describe the scene abstractly (hands at most, or replace with product/lifestyle-object shots).
 - If a reference scene was a product close-up (isProductScene), the adapted scene must be a hero product shot suitable for image-to-video using the user's product photo.

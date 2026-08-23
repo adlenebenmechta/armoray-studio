@@ -106,11 +106,16 @@ export const ar: Dictionary = {
       analysis: {
         title: "تحليل البنية", hook: "الخطّاف", structure: "البنية الإقناعية", tone: "النبرة", pacing: "الإيقاع",
         scenes: "المشاهد", scene: "مشهد", camera: "الكاميرا", onScreen: "على الشاشة", productScene: "لقطة منتج", seconds: "ث",
+        xray: "أشعة الفيديو المرجعي", format: "الصيغة",
+        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة" } as Record<string, string>,
       },
       product: { title: "المنتج", edit: "تعديل" },
       storyboard: {
         title: "لوحة القصة المُكيَّفة", prompt: "أمر التوليد", voiceover: "التعليق الصوتي", onScreen: "النص على الشاشة", listen: "استمع",
         pending: "بالانتظار", generating: "جارٍ التوليد…", done: "جاهز", error: "فشل",
+        speechQa: "فحص الصوت", words: "كلمة", wps: "كلمة/ث", passed: "ناجح", failed: "يحتاج محاولة أخرى",
+        hookLine: "الخطّاف الجديد", ctaLine: "الدعوة الجديدة",
+        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة" } as Record<string, string>,
       },
       result: { title: "إعلانك المستنسخ", download: "تحميل", sceneN: "مشهد" },
     },
@@ -121,6 +126,10 @@ export const ar: Dictionary = {
       urlLabel: "رابط المنتج (اختياري)", urlPh: "https://yourstore.com/product",
       descLabel: "الوصف والجمهور", descPh: "ما هو، أهم الفوائد، الجمهور المستهدف…",
       imageLabel: "صورة المنتج (لتوليد صورة-إلى-فيديو)", imagePh: "ارفع لقطة نظيفة للمنتج",
+      sizeLabel: "الحجم الواقعي (اختياري)", sizePh: "مثال: 30 منديل / 50 مل",
+      sizeHint: "يُبقي المنتج بمقياسه الصحيح في الأيدي واللقطة المقربة",
+      factsLabel: "حقائق التوليد المحفوظة (اختياري)", factsPh: "مثال: العبوة البنفسجية هي مصدر الحقيقة المطلق للمنتج",
+      factsHint: "قواعد تُحقن في كل أمر توليد — نفس آلية Notch للثبات",
       save: "احفظ المنتج", cancel: "إلغاء", savedToast: "تم حفظ المنتج في العقل العلامي",
     },
     views: {

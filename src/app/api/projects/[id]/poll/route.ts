@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createSceneTask, queryTask, SceneTaskError } from "@/lib/ai/generation";
+import { runSpeechQa } from "@/lib/ai/speechqa";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,9 +20,19 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         try {
           const result = await queryTask(scene.taskId);
           if (result.status === "done" && result.videoUrl) {
+            // Speech QA — the Notch-style "listen back" check
+            let speechQa: string | null = null;
+            try {
+              if (scene.newVoiceover) {
+                const qa = await runSpeechQa(result.videoUrl, scene.newVoiceover);
+                speechQa = JSON.stringify(qa);
+              }
+            } catch {
+              speechQa = null;
+            }
             await db.scene.update({
               where: { id: scene.id },
-              data: { status: "done", videoUrl: result.videoUrl },
+              data: { status: "done", videoUrl: result.videoUrl, speechQa },
             });
             changes.push({ sceneId: scene.id, status: "done", videoUrl: result.videoUrl });
           } else if (result.status === "error") {

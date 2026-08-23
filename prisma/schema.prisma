@@ -20,6 +20,9 @@ model Project {
   productUrl    String?
   productDesc   String?
   productImage  String?
+  productSize   String?
+  productFacts  String?
+  credits       Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   messages      Message[]
@@ -42,6 +45,7 @@ model Scene {
   projectId     String
   project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   index         Int
+  role          String  @default("demo")
   description   String
   camera        String?
   onScreenText  String?
@@ -54,5 +58,6 @@ model Scene {
   taskId        String?
   videoUrl      String?
   error         String?
+  speechQa      String?
   createdAt     DateTime @default(now())
 }
