@@ -663,7 +663,7 @@ function ChatMessage({
   // agent messages
   return (
     <div className="flex gap-3 max-w-full">
-      <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-background font-bold text-sm shadow">
+      <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-[#593dfa] to-[#c026d3] flex items-center justify-center text-background font-bold text-sm shadow">
         N
       </div>
       <div className="flex flex-col gap-2 min-w-0 max-w-[92%] md:max-w-[78%]">
@@ -678,7 +678,7 @@ function ChatMessage({
           <Card className="overflow-hidden">
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2 text-sm font-semibold">
-                <Package className="w-4 h-4 text-emerald-500" />
+                <Package className="w-4 h-4 text-[#593dfa]" />
                 {c.product.title}
               </div>
               <div className="text-sm font-medium">{project.productName}</div>
@@ -708,7 +708,7 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
     <Card className="overflow-hidden">
       <CardContent className="p-4 md:p-5 space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold">
-          <Clapperboard className="w-4 h-4 text-emerald-500" />
+          <Clapperboard className="w-4 h-4 text-[#593dfa]" />
           {c.xray}
           {analysis.format && <Badge variant="secondary" className="text-xs">{analysis.format}</Badge>}
         </div>
@@ -718,15 +718,15 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
           {scenes.map((s) => {
             const pct = ((s.duration || 3) / totalDur) * 100;
             const roleColor: Record<string, string> = {
-              hook: "bg-emerald-500/80 text-zinc-950",
-              demo: "bg-teal-500/70 text-zinc-950",
-              proof: "bg-amber-400/70 text-zinc-950",
-              cta: "bg-orange-500/80 text-zinc-950",
+              hook: "bg-[#593dfa] text-white",
+              demo: "bg-[#2563eb] text-white",
+              proof: "bg-[#c026d3] text-white",
+              cta: "bg-[#d54123] text-white",
             };
             return (
               <div
                 key={s.id}
-                className={`${roleColor[s.role] || "bg-zinc-600 text-zinc-100"} flex items-center justify-center min-w-0 px-1 truncate`}
+                className={`${roleColor[s.role] || "bg-muted text-muted-foreground"} flex items-center justify-center min-w-0 px-1 truncate`}
                 style={{ width: `${pct}%` }}
                 title={`${roles[s.role] || s.role} · ${Math.round(s.duration)}s`}
               >
@@ -741,7 +741,7 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
 
         {analysis.hook && (
           <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
-            <div className="text-xs font-semibold text-emerald-500 mb-1">{c.hook}</div>
+            <div className="text-xs font-semibold text-[#593dfa] mb-1">{c.hook}</div>
             <div className="text-sm">{analysis.hook}</div>
           </div>
         )}
@@ -778,12 +778,12 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
                   <Badge variant="outline" className="text-xs">
                     {c.scene} {s.index + 1}
                   </Badge>
-                  {s.role && <Badge className="text-xs bg-teal-500/15 text-teal-600 border border-teal-500/30">{roles[s.role] || s.role}</Badge>}
+                  {s.role && <Badge className="text-xs bg-[#2563eb]/10 text-[#2563eb] border border-[#2563eb]/30">{roles[s.role] || s.role}</Badge>}
                   <span className="text-xs text-muted-foreground">
                     {Math.round(s.duration)} {c.seconds}
                   </span>
                   {s.isProductScene && (
-                    <Badge className="text-xs bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/15">
+                    <Badge className="text-xs bg-emerald-500/15 text-[#593dfa] border border-border hover:bg-emerald-500/15">
                       {c.productScene}
                     </Badge>
                   )}
@@ -830,7 +830,7 @@ function StoryboardCard({
       <CardContent className="p-4 md:p-5 space-y-4">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Wand2 className="w-4 h-4 text-emerald-500" />
+            <Wand2 className="w-4 h-4 text-[#593dfa]" />
             {c.title}
           </div>
           {generatingCount > 0 && (
@@ -847,9 +847,9 @@ function StoryboardCard({
                 <Badge variant="outline" className="text-xs">
                   {dict.studio.cards.analysis.scene} {s.index + 1}
                 </Badge>
-                {s.role && <Badge className="text-xs bg-teal-500/15 text-teal-600 border border-teal-500/30">{roles[s.role] || s.role}</Badge>}
+                {s.role && <Badge className="text-xs bg-[#2563eb]/10 text-[#2563eb] border border-[#2563eb]/30">{roles[s.role] || s.role}</Badge>}
                 {s.isProductScene && (
-                  <Badge className="text-xs bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/15">
+                  <Badge className="text-xs bg-emerald-500/15 text-[#593dfa] border border-border hover:bg-emerald-500/15">
                     {dict.studio.cards.analysis.productScene}
                   </Badge>
                 )}
@@ -858,7 +858,7 @@ function StoryboardCard({
                   <button
                     onClick={() => onListen(s)}
                     disabled={ttsBusy === s.id}
-                    className="ms-auto flex items-center gap-1 text-xs text-emerald-500 hover:underline disabled:opacity-50"
+                    className="ms-auto flex items-center gap-1 text-xs text-[#593dfa] hover:underline disabled:opacity-50"
                   >
                     {ttsBusy === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Volume2 className="w-3.5 h-3.5" />}
                     {c.listen}
@@ -912,10 +912,10 @@ function ResultCard({ scenes }: { scenes: SceneData[] }) {
   const done = scenes.filter((s) => s.status === "done" && s.videoUrl);
   if (!done.length) return null;
   return (
-    <Card className="overflow-hidden border-emerald-500/30">
+    <Card className="overflow-hidden border-border">
       <CardContent className="p-4 md:p-5 space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold">
-          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <Sparkles className="w-4 h-4 text-[#593dfa]" />
           {c.title}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -931,7 +931,7 @@ function ResultCard({ scenes }: { scenes: SceneData[] }) {
                   download
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1 text-xs text-emerald-500 hover:underline"
+                  className="flex items-center gap-1 text-xs text-[#593dfa] hover:underline"
                 >
                   <Download className="w-3.5 h-3.5" />
                   {c.download}
@@ -949,7 +949,7 @@ function SceneStatusBadge({ status }: { status: string }) {
   const { dict } = useLang();
   const c = dict.studio.cards.storyboard;
   if (status === "done")
-    return <Badge className="text-xs bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/15">{c.done}</Badge>;
+    return <Badge className="text-xs bg-emerald-500/15 text-[#593dfa] border border-border hover:bg-emerald-500/15">{c.done}</Badge>;
   if (status === "generating")
     return (
       <Badge className="text-xs bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/15">
@@ -983,16 +983,16 @@ function SpeechQaRow({ scene }: { scene: SceneData }) {
   if (!qa) return null;
 
   return (
-    <div className={`rounded-lg border p-2.5 space-y-1 ${qa.passed ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/40 bg-amber-500/5"}`}>
+    <div className={`rounded-lg border p-2.5 space-y-1 ${qa.passed ? "border-[#593dfa]/30 bg-[#593dfa]/5" : "border-amber-500/40 bg-amber-500/5"}`}>
       <div className="flex items-center gap-2 flex-wrap text-xs">
-        <Volume2 className="w-3.5 h-3.5 text-emerald-500" />
+        <Volume2 className="w-3.5 h-3.5 text-[#593dfa]" />
         <span className="font-semibold">{c.speechQa}</span>
         <span className="text-muted-foreground">
           {qa.wordCount} {c.words} · {qa.pace} {c.wps}
         </span>
         <Badge
           variant="outline"
-          className={`text-[10px] ${qa.passed ? "text-emerald-500 border-emerald-500/40" : "text-amber-500 border-amber-500/40"}`}
+          className={`text-[10px] ${qa.passed ? "text-[#593dfa] border-[#593dfa]/40" : "text-amber-500 border-amber-500/40"}`}
         >
           {qa.passed ? c.passed : c.failed}
         </Badge>
