@@ -68,3 +68,30 @@ Stage Summary:
 - API verified: /api/projects returns data, /api/chat replies (fallback when no key)
 - Studio creates projects on production (verified in browser)
 - Full AI activation: user sets ZAI_API_KEY from their z.ai account in Vercel env vars
+
+---
+Task ID: 4
+Agent: main
+Task: Notch-exact design match (fonts, colors, login) + A-Z secrets document
+
+Work Log:
+- Extracted Notch design tokens via DevTools: Inter font, #EEDEEC bg, #212121 text,
+  #F1EFEF inputs, #D9D9D9 borders, 8px radius, 64px pill buttons, white rounded-2xl cards,
+  brand colors #593dfa/#2563eb/#c026d3/#d54123, GSI Google button 360x44, login card 440px p-10
+- Detected auth stack: Google Identity Services (gsi/client) + custom email OTP backend
+  (no Firebase/Auth0/Supabase/Clerk), React-Toastify, PostHog+Mixpanel+Sentry+GA4+FB Pixel
+- Extracted live API map: /api/v1/video-agent/sessions, session-statuses, workspaces products,
+  whoami, subscription, personalised-agents, notifications, mixpanel proxy, ad-insight endpoints, ads-library
+- Rebuilt globals.css with Notch-accurate tokens, layout.tsx with Inter + Noto Sans Arabic
+- Built LoginScreen.tsx: exact replica (440px card, GSI-style Google button, email→4-digit OTP
+  with auto-advance focus, resend timer 30s, Privacy/Terms links, 3 languages)
+- Rewrote Landing + StudioApp in light theme with Notch sidebar structure (Chats list with
+  status labels, Credits box, language switcher)
+- Fixed: stale CSS chunk cache (proxy), setMode→setUserMode bug, localeNames import
+- Wrote comprehensive Arabic RTL secrets document (11-task pipeline, models/APIs per task,
+  design tokens table, API map, business system, replication map) → 11-page PDF via creative-flow
+
+Stage Summary:
+- Production live at armoray-studio.vercel.app with Notch-exact light theme + login flow
+- Secrets document delivered: download/أسرار_Notch_الوثيقة_الكاملة.pdf (+HTML source)
+- Full login flow verified on production: landing → login (email+OTP) → studio
