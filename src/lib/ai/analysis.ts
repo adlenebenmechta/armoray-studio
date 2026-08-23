@@ -1,4 +1,5 @@
-import ZAI from "z-ai-web-dev-sdk";
+import type ZAI from "z-ai-web-dev-sdk";
+import { getZAI } from "./zai";
 
 export interface SceneAnalysis {
   description: string;
@@ -33,7 +34,7 @@ export async function analyzeVideoFrames(
   transcript: string | null,
   localeName: string
 ): Promise<VideoAnalysis> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
 
   const prompt = `You are an elite advertising creative analyst. You are given ${frames.length} key frames, extracted in chronological order from a ${Math.round(durationSec)}-second video ad.
 ${transcript ? `The transcribed voiceover of the video is:\n"""${transcript}"""\n` : ""}

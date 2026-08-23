@@ -1,4 +1,5 @@
-import ZAI from "z-ai-web-dev-sdk";
+import type ZAI from "z-ai-web-dev-sdk";
+import { getZAI } from "./zai";
 import type { VideoAnalysis } from "./analysis";
 
 export interface AdaptedScene {
@@ -34,7 +35,7 @@ export async function adaptScriptForProduct(
   },
   localeName: string
 ): Promise<AdaptationResult> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
 
   const productFactsBlock = product.facts?.length
     ? `\n- Saved rendering facts (MUST be preserved in every generated scene): ${product.facts.join(" | ")}`

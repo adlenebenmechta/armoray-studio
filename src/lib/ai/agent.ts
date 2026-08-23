@@ -1,4 +1,5 @@
-import ZAI from "z-ai-web-dev-sdk";
+import type ZAI from "z-ai-web-dev-sdk";
+import { getZAI } from "./zai";
 
 export interface AgentContext {
   localeName: string;
@@ -20,7 +21,7 @@ export async function agentReply(
   history: { role: "user" | "assistant"; content: string }[],
   ctx: AgentContext
 ): Promise<string> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
 
   const system = `You are "Nova", the AI growth-marketer agent inside Armoray Studio — a multilingual (Arabic/English/French) AI ad-cloning platform that rebuilds any winning video ad for the user's own product.
 

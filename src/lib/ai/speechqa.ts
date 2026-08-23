@@ -1,4 +1,5 @@
-import ZAI from "z-ai-web-dev-sdk";
+import type ZAI from "z-ai-web-dev-sdk";
+import { getZAI } from "./zai";
 
 export interface SpeechQaResult {
   transcript: string;
@@ -23,7 +24,7 @@ export async function runSpeechQa(
   videoUrl: string,
   intendedLine: string
 ): Promise<SpeechQaResult> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
 
   // 1. Ask the vision model to read the video and estimate speech timing
   let transcript = "";

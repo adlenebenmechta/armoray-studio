@@ -1,4 +1,5 @@
-import ZAI from "z-ai-web-dev-sdk";
+import type ZAI from "z-ai-web-dev-sdk";
+import { getZAI } from "./zai";
 
 export interface GenTask {
   taskId: string;
@@ -23,7 +24,7 @@ export async function createSceneTask(opts: {
   isProductScene: boolean;
   size?: string;
 }): Promise<GenTask> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
   const size = opts.size || "1080x1920";
   const base = {
     prompt: opts.prompt,
@@ -79,7 +80,7 @@ export interface TaskResult {
 }
 
 export async function queryTask(taskId: string): Promise<TaskResult> {
-  const zai = await ZAI.create();
+  const zai = await getZAI();
   try {
     const result = await zai.async.result.query(taskId);
 
