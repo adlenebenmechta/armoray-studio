@@ -95,3 +95,25 @@ Stage Summary:
 - Production live at armoray-studio.vercel.app with Notch-exact light theme + login flow
 - Secrets document delivered: download/أسرار_Notch_الوثيقة_الكاملة.pdf (+HTML source)
 - Full login flow verified on production: landing → login (email+OTP) → studio
+
+---
+Task ID: 5
+Agent: main
+Task: Explain + implement Notch's free-edit credit system
+
+Work Log:
+- Explained the 3-layer mechanism: parentSessionId child sessions (billing on root
+  sessions only), what's NOT re-run during edits (X-RAY/Brand Brain/Storyboard/script),
+  and the business logic (better final ads = better performance data) with the
+  2-retry cost guard ("before a third paid take")
+- Implemented in Armoray: project.credits ledger — first generation charges 3
+  credits, all subsequent regenerations are free edits (isEdit/creditCost in response)
+- Agent messaging: paidGenIntro vs freeEditIntro (AR/EN/FR), real sidebar counter
+- Fixed Dictionary types (missing fields), chat ctx typing, vision content typing —
+  tsc clean for Vercel build
+- Secrets document: added chapter 8 (why edits are free) — now 12 pages
+- Restarted dev server with detached launcher (scripts/start-dev.sh) after cache clear
+
+Stage Summary:
+- Credit system verified: 1st gen = 3 credits, 2nd/3rd = 0 (isEdit=true)
+- Production deployed and verified: armoray-studio.vercel.app
