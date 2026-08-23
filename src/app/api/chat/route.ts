@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     const reply = await agentReply(message, history, ctx);
     return NextResponse.json({ reply });
   } catch (e: unknown) {
-    console.error("chat error", e);
+    console.error("chat error", e); return NextResponse.json({ error: "chat_failed", detail: String((e as { message?: string })?.message ?? e).slice(0, 300) }, { status: 500 });
     return NextResponse.json({ error: "chat_failed" }, { status: 500 });
   }
 }
