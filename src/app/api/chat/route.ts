@@ -64,7 +64,15 @@ export async function POST(req: Request) {
 
     if (!message) return NextResponse.json({ error: "no_message" }, { status: 400 });
 
-    let ctx = {
+    let ctx: {
+      localeName: string;
+      hasVideo: boolean;
+      hasProduct: boolean;
+      hasStoryboard: boolean;
+      isGenerating: boolean;
+      productName?: string;
+      sceneCount?: number;
+    } = {
       localeName: localeNames[locale] ?? "English",
       hasVideo: false,
       hasProduct: false,

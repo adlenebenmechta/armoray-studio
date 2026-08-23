@@ -14,6 +14,21 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     const scenes = project.scenes.filter((s) => s.newPrompt && s.status !== "generating" && s.status !== "done");
     if (!scenes.length) return NextResponse.json({ error: "no_scenes" }, { status: 400 });
 
+    // ── Notch-style credit system ─────────────────────────────────────
+    // Billing attaches to the CREATIVE SESSION, not to media renders:
+    // - First generation of a project = a NEW creative job → costs credits.
+    // - Any later regeneration (change product, change character, retry)
+    //   is an EDIT of the already-paid job → FREE (child-session model).
+    const isEdit = project.credits > 0;
+    const creditCost = isEdit ? 0 : 3;
+    if (creditCost > 0) {
+      await db.project.update({
+        where: { id },
+        data: { credits: { increment: creditCost } },
+      });
+    }
+    // ────────────────────────────────────────────────────────────────────
+
     await db.project.update({ where: { id }, data: { status: "generating" } });
 
     // Reset failed scenes to pending so the sequential queue can retry them
@@ -62,7 +77,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       include: { scenes: { orderBy: { index: "asc" } } },
     });
 
-    return NextResponse.json({ project: updated, started, failed });
+    return NextResponse.json({ project: updated, started, failed, isEdit, creditCost });
   } catch (e: unknown) {
     console.error("generate error", e);
     return NextResponse.json({ error: "generate_failed" }, { status: 500 });

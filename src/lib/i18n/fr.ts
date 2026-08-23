@@ -90,6 +90,10 @@ export const fr: Dictionary = {
       productSavedIntro: "Reçu — produit enregistré dans le Cerveau de Marque. Prêt quand tu veux : demande-moi de recréer la vidéo de référence pour ce produit.",
       adaptedIntro: "Voici le storyboard adapté — même structure gagnante, reconstruite pour ton produit. Vérifie les prompts puis lance la génération !",
       generateIntro: "Silence, ça tourne… génération de chaque scène en cours. Ça prend généralement quelques minutes — je mets à jour chaque scène dès qu'elle est prête.",
+        paidGenIntro: "Nouvelle génération ! {credits} crédits utilisés pour ce travail créatif. Génération en cours — je te tiens au courant.",
+        freeEditIntro: "Édition totalement gratuite ✨ — une session d'édition liée à ton travail déjà payé : on réutilise le script, le rythme et les overlays, en régénérant seulement les scènes concernées. Aucun crédit déduit.",
+        creditsLabel: "Crédits",
+        freeEditNote: "La première génération coûte des crédits — toutes les éditions ensuite sont gratuites",
       doneIntro: "Ton clone est prêt ! Même structure que la référence, 100% ton produit. Tu veux des variantes ?",
       videoAttached: "Vidéo de référence reçue",
       suggestions: {

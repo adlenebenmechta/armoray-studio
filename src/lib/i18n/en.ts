@@ -90,6 +90,10 @@ export const en: Dictionary = {
       productSavedIntro: "Got it — product saved to the Brand Brain. Ready when you are: ask me to recreate the reference video for this product.",
       adaptedIntro: "Here's the adapted storyboard — same winning structure, rebuilt for your product. Review the prompts, then hit generate!",
       generateIntro: "Lights, camera… generating every scene now. This usually takes a few minutes — I'll update each scene as it finishes.",
+        paidGenIntro: "New generation! {credits} credits used for this creative job. Generating every scene now — I'll update you as each one lands.",
+        freeEditIntro: "Completely free edit ✨ — this is an edit session linked to your already-paid job: we reuse the script, pacing and overlays, regenerating only the affected scenes. Zero credits charged.",
+        creditsLabel: "Credits",
+        freeEditNote: "First generation per project costs credits — every edit after is free",
       doneIntro: "Your clone is ready! Same structure as the reference, 100% your product. Want variations?",
       videoAttached: "Reference video received",
       suggestions: {

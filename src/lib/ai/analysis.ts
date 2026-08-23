@@ -68,7 +68,9 @@ Rules:
 - Keep all string values (except camera/structure labels you may keep concise) written in ${localeName}.
 - Output raw JSON only.`;
 
-  const content: Array<Record<string, unknown>> = [{ type: "text", text: prompt }];
+  const content: Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }> = [
+    { type: "text", text: prompt },
+  ];
   for (const f of frames) {
     content.push({ type: "image_url", image_url: { url: f } });
   }

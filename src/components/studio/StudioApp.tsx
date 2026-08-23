@@ -193,16 +193,19 @@ export default function StudioApp({ onExit }: { onExit: () => void }) {
           )}
         </nav>
 
-        {/* credits — Notch style */}
+        {/* credits — Notch style: real usage from project ledger */}
         <div className="p-3 border-t border-border space-y-2">
           <div className="rounded-xl bg-muted border border-border p-3">
             <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground mb-1.5">
               <Zap className="w-3.5 h-3.5" />
-              Credits
+              {s.chat.creditsLabel ?? "Credits"}
             </div>
             <div className="text-sm font-extrabold">
-              {projects.filter((p) => p.status === "done").length * 3}/10{" "}
+              {projects.reduce((a, p) => a + (p.credits || 0), 0)}/30{" "}
               <span className="text-xs font-medium text-muted-foreground">used</span>
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-1 leading-snug">
+              {dict.studio.chat.freeEditNote ?? ""}
             </div>
           </div>
         </div>

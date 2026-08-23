@@ -57,6 +57,7 @@ export interface ProjectData {
   name: string;
   status: string;
   locale: string;
+  credits?: number;
   refVideoName?: string | null;
   refDuration?: number | null;
   refAnalysis?: string | null;
@@ -343,8 +344,12 @@ export default function AgentChat({
       if (!res.ok) throw new Error();
       const data = await res.json();
       onProjectUpdate(data.project);
-      pushAgent(c.generateIntro, "storyboard", { generating: true });
-      await saveMsg("agent", "storyboard", c.generateIntro, { generating: true });
+      // Notch-style billing messaging: first generation is paid, edits are free
+      const genMsg: string = data.isEdit
+        ? c.freeEditIntro
+        : String(c.paidGenIntro ?? c.generateIntro).replace("{credits}", String(data.creditCost ?? 3));
+      pushAgent(genMsg, "storyboard", { generating: true });
+      await saveMsg("agent", "storyboard", genMsg, { generating: true, isEdit: data.isEdit });
     } catch {
       pushAgent(dict.studio.errors.generateFailed, "error");
     } finally {

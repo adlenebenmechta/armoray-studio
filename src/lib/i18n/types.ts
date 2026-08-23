@@ -48,6 +48,10 @@ export interface Dictionary {
       productSavedIntro: string;
       adaptedIntro: string;
       generateIntro: string;
+      paidGenIntro: string;
+      freeEditIntro: string;
+      creditsLabel: string;
+      freeEditNote: string;
       doneIntro: string;
       videoAttached: string;
       suggestions: { addVideo: string; addProduct: string; recreate: string; generate: string; regenerate: string; moreAngles: string };
@@ -57,17 +61,23 @@ export interface Dictionary {
       analysis: {
         title: string; hook: string; structure: string; tone: string; pacing: string;
         scenes: string; scene: string; camera: string; onScreen: string; productScene: string; seconds: string;
+        xray: string; format: string; roles: Record<string, string>;
       };
       product: { title: string; edit: string };
       storyboard: {
         title: string; prompt: string; voiceover: string; onScreen: string; listen: string;
         pending: string; generating: string; done: string; error: string;
+        speechQa: string; words: string; wps: string; passed: string; failed: string;
+        hookLine: string; ctaLine: string; roles: Record<string, string>;
       };
       result: { title: string; download: string; sceneN: string };
     };
     productDialog: {
       title: string; desc: string; nameLabel: string; namePh: string; urlLabel: string; urlPh: string;
-      descLabel: string; descPh: string; imageLabel: string; imagePh: string; save: string; cancel: string; savedToast: string;
+      descLabel: string; descPh: string; imageLabel: string; imagePh: string;
+      sizeLabel: string; sizePh: string; sizeHint: string;
+      factsLabel: string; factsPh: string; factsHint: string;
+      save: string; cancel: string; savedToast: string;
     };
     views: {
       projects: { title: string; empty: string; open: string; del: string; scenes: string };
