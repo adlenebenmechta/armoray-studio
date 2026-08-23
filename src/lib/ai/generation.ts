@@ -4,6 +4,14 @@ export interface GenTask {
   taskId: string;
 }
 
+export class SceneTaskError extends Error {
+  transient: boolean;
+  constructor(message: string, transient: boolean) {
+    super(message);
+    this.transient = transient;
+  }
+}
+
 /**
  * Engine 3 — Scene Engine (real AI video generation).
  * Product scenes use image-to-video with the user's product photo for consistency.
@@ -25,27 +33,43 @@ export async function createSceneTask(opts: {
     duration: 5,
   };
 
-  if (opts.isProductScene && opts.productImage) {
+  const isTransient = (err: unknown) => {
+    const msg = String((err as { message?: string })?.message ?? err);
+    return msg.includes("429") || msg.includes("Too many requests");
+  };
+
+  const attempt = async (params: Record<string, unknown>) => {
     try {
-      const task = await zai.video.generations.create({
-        ...base,
-        image_url: opts.productImage,
-      });
-      return { taskId: task.id };
-    } catch {
-      // fall back to text-to-video if image-to-video fails
-      const task = await zai.video.generations.create(base);
-      return { taskId: task.id };
+      return await zai.video.generations.create(params as never);
+    } catch (err) {
+      if (isTransient(err)) throw new SceneTaskError("rate_limited", true);
+      throw err;
     }
-  }
+  };
 
   try {
-    const task = await zai.video.generations.create(base);
-    return { taskId: task.id };
-  } catch {
-    // fallback: horizontal size
-    const task = await zai.video.generations.create({ ...base, size: "1920x1080" });
-    return { taskId: task.id };
+    if (opts.isProductScene && opts.productImage) {
+      try {
+        const task = await attempt({ ...base, image_url: opts.productImage });
+        return { taskId: task.id };
+      } catch (err) {
+        if (err instanceof SceneTaskError) throw err; // rate limited — do not fallback
+        // non-transient failure: fall through to text-to-video
+      }
+    }
+    try {
+      const task = await attempt(base);
+      return { taskId: task.id };
+    } catch (err) {
+      if (err instanceof SceneTaskError) throw err;
+      // fallback: horizontal size
+      const task = await attempt({ ...base, size: "1920x1080" });
+      return { taskId: task.id };
+    }
+  } catch (err) {
+    if (err instanceof SceneTaskError) throw err;
+    const msg = String((err as { message?: string })?.message ?? err);
+    throw new SceneTaskError(msg, false);
   }
 }
 
@@ -56,17 +80,26 @@ export interface TaskResult {
 
 export async function queryTask(taskId: string): Promise<TaskResult> {
   const zai = await ZAI.create();
-  const result = await zai.async.result.query(taskId);
+  try {
+    const result = await zai.async.result.query(taskId);
 
-  if (result.task_status === "SUCCESS") {
-    const videoUrl =
-      (result as Record<string, any>).video_result?.[0]?.url ||
-      (result as Record<string, any>).video_url ||
-      (result as Record<string, any>).url ||
-      (result as Record<string, any>).video;
-    if (videoUrl) return { status: "done", videoUrl };
-    return { status: "error" };
+    if (result.task_status === "SUCCESS") {
+      const videoUrl =
+        (result as Record<string, any>).video_result?.[0]?.url ||
+        (result as Record<string, any>).video_url ||
+        (result as Record<string, any>).url ||
+        (result as Record<string, any>).video;
+      if (videoUrl) return { status: "done", videoUrl };
+      return { status: "error" };
+    }
+    if (result.task_status === "FAIL") return { status: "error" };
+    return { status: "processing" };
+  } catch (err: unknown) {
+    // The SDK throws on FAIL with a 400 containing the status in the body.
+    const msg = String((err as { message?: string })?.message ?? err);
+    if (msg.includes("FAIL") || msg.includes("1301") || msg.includes("content") || msg.includes("filter")) {
+      return { status: "error" };
+    }
+    return { status: "processing" }; // transient query error, keep waiting
   }
-  if (result.task_status === "FAIL") return { status: "error" };
-  return { status: "processing" };
 }

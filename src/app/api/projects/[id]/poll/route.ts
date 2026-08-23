@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { queryTask } from "@/lib/ai/generation";
+import { createSceneTask, queryTask, SceneTaskError } from "@/lib/ai/generation";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,7 +13,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const changes: { sceneId: string; status: string; videoUrl?: string }[] = [];
     let anyGenerating = false;
-    let anyDone = false;
 
     for (const scene of project.scenes) {
       if (scene.status === "generating" && scene.taskId) {
@@ -25,7 +24,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
               data: { status: "done", videoUrl: result.videoUrl },
             });
             changes.push({ sceneId: scene.id, status: "done", videoUrl: result.videoUrl });
-            anyDone = true;
           } else if (result.status === "error") {
             await db.scene.update({
               where: { id: scene.id },
@@ -38,22 +36,44 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         } catch {
           anyGenerating = true; // keep waiting, transient query error
         }
-      } else if (scene.status === "done") {
-        anyDone = true;
-      } else if (scene.status === "error") {
-        // nothing
+      }
+    }
+
+    // Sequential generation: the API allows ~1 concurrent task (429 otherwise).
+    // When nothing is generating, automatically start the next pending scene.
+    let startedNext = false;
+    if (!anyGenerating && project.status === "generating") {
+      const next = project.scenes.find((s) => s.newPrompt && s.status === "pending");
+      if (next) {
+        try {
+          const task = await createSceneTask({
+            prompt: next.newPrompt!,
+            productImage: project.productImage,
+            isProductScene: next.isProductScene,
+          });
+          await db.scene.update({
+            where: { id: next.id },
+            data: { taskId: task.taskId, status: "generating", error: null },
+          });
+          startedNext = true;
+        } catch (err) {
+          if (err instanceof SceneTaskError && err.transient) {
+            // rate limited (429): leave the scene pending, next poll retries
+          } else {
+            await db.scene.update({
+              where: { id: next.id },
+              data: { status: "error", error: "task_create_failed" },
+            });
+          }
+        }
       }
     }
 
     // update project status
     const hasScenes = project.scenes.length > 0;
     const allSettled = hasScenes && project.scenes.every((s) => s.status === "done" || s.status === "error");
-    const anyPending = hasScenes && project.scenes.some((s) => s.status === "pending" || s.status === "generating");
-
     if (allSettled) {
       await db.project.update({ where: { id }, data: { status: "done" } });
-    } else if (anyPending && !anyGenerating && project.status === "generating") {
-      // some scenes pending but none generating anymore (e.g. after failures) — keep status
     }
 
     const updated = await db.project.findUnique({
@@ -61,7 +81,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       include: { scenes: { orderBy: { index: "asc" } } },
     });
 
-    return NextResponse.json({ project: updated, changes });
+    return NextResponse.json({ project: updated, changes, startedNext });
   } catch {
     return NextResponse.json({ error: "poll_failed" }, { status: 500 });
   }

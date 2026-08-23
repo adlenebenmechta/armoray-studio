@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { createSceneTask } from "@/lib/ai/generation";
+import { createSceneTask, SceneTaskError } from "@/lib/ai/generation";
 
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,27 +16,44 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
     await db.project.update({ where: { id }, data: { status: "generating" } });
 
+    // Reset failed scenes to pending so the sequential queue can retry them
+    for (const s of project.scenes.filter((sc) => sc.status === "error")) {
+      await db.scene.update({ where: { id: s.id }, data: { status: "pending", error: null } });
+    }
+
+    // Refetch AFTER resets so we see fresh statuses (bug fix: stale scenes list)
+    const freshScenes = await db.scene.findMany({ where: { projectId: id }, orderBy: { index: "asc" } });
+
+    // The video API rate-limits concurrent tasks (429), so we start ONLY the
+    // first scene here. The poll endpoint chains the remaining scenes
+    // sequentially as each one finishes.
     const started: string[] = [];
     const failed: string[] = [];
+    const first = freshScenes.find((s) => s.newPrompt && s.status !== "done" && s.status !== "generating");
 
-    for (const scene of scenes) {
+    if (first) {
       try {
         const task = await createSceneTask({
-          prompt: scene.newPrompt!,
+          prompt: first.newPrompt!,
           productImage: project.productImage,
-          isProductScene: scene.isProductScene,
+          isProductScene: first.isProductScene,
         });
         await db.scene.update({
-          where: { id: scene.id },
+          where: { id: first.id },
           data: { taskId: task.taskId, status: "generating", error: null },
         });
-        started.push(scene.id);
-      } catch (e) {
-        await db.scene.update({
-          where: { id: scene.id },
-          data: { status: "error", error: "task_create_failed" },
-        });
-        failed.push(scene.id);
+        started.push(first.id);
+      } catch (err) {
+        if (err instanceof SceneTaskError && err.transient) {
+          // rate limited (429): leave scene pending, poll endpoint will retry
+          await db.scene.update({ where: { id: first.id }, data: { status: "pending" } });
+        } else {
+          await db.scene.update({
+            where: { id: first.id },
+            data: { status: "error", error: "task_create_failed" },
+          });
+        }
+        failed.push(first.id);
       }
     }
 

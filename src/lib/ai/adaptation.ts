@@ -59,7 +59,8 @@ Respond with STRICT JSON only (no markdown fences, no commentary), with this exa
 
 Rules:
 - One adapted scene per reference scene, same order, same approximate durations.
-- newPrompt MUST be written in English (the video model works best in English) and MUST prominently feature the user's product by name.
+- newPrompt MUST be written in English ONLY (the video model works best in English) and MUST prominently feature the user's product. If the product name contains non-Latin characters (Arabic etc.), use its Latin/brand part or a short English translation of it (e.g. "Hydra Glow serum") — NEVER mix Arabic script inside the English prompt.
+- Keep prompts strictly commercial and product-focused: bottles, packaging, textures, drops, splashes, surfaces, lighting, camera moves. AVOID describing human skin, body parts, faces, or people in close-up detail — if the reference scene had people, describe the scene abstractly (hands at most, or replace with product/lifestyle-object shots).
 - If a reference scene was a product close-up (isProductScene), the adapted scene must be a hero product shot suitable for image-to-video using the user's product photo.
 - newVoiceover and onScreenNew MUST be in ${localeName}.
 - Keep the total number of scenes identical to the reference (${analysis.scenes.length} scenes).
