@@ -165,3 +165,25 @@ Stage Summary:
 - LIVE: https://notch-alternative.vercel.app (working, trilingual)
 - Railway: project+DB configured and waiting; needs paid plan for networking to work
 - All fixes committed to GitHub (98c37e1)
+
+---
+Task ID: 8
+Agent: main
+Task: Add "Notch Alternative" window inside notch-alternative.vercel.app main menu
+
+Work Log:
+- Reverted the armoray-studio landing layout change (user complaint — restore original)
+- Added 9th menu card "Notch Alternative / بديل Notch / Alternative Notch" to the
+  Avatar Machine MainMenu (lightning+grid icon, violet accent, trilingual strings)
+- Created NotchAltView component: fullscreen window with header (back / title /
+  open-in-tab buttons) + iframe embedding armoray-studio.vercel.app/?studio=1
+- Wired into page.tsx navigation chain like the other 8 machines (auth-gated)
+- Fixed turbopack root resolution (import.meta.dirname) — dev works in nested dir,
+  production standalone unaffected
+- Verified locally end-to-end: card visible → login → click → window opens with
+  iframe → back button → Arabic switch shows "بديل Notch" with RTL
+- Deployed to Vercel and verified the 9th card live on production
+
+Stage Summary:
+- https://notch-alternative.vercel.app now has 9 machines including Notch Alternative
+- armoray-studio.vercel.app restored to original layout
