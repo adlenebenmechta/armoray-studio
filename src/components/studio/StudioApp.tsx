@@ -22,8 +22,9 @@ import {
 import { useLang } from "@/lib/i18n/LanguageProvider";
 import { localeNames } from "@/lib/i18n";
 import AgentChat, { type ProjectData } from "./AgentChat";
+import InspirationView from "./InspirationView";
 
-type View = "agents" | "projects" | "brand" | "settings" | "notch-alt";
+type View = "agents" | "projects" | "brand" | "settings" | "notch-alt" | "inspiration";
 
 export default function StudioApp({ onExit }: { onExit: () => void }) {
   const { dict, locale, setLocale } = useLang();
@@ -121,6 +122,7 @@ export default function StudioApp({ onExit }: { onExit: () => void }) {
   const navItems: { key: View; icon: React.ReactNode; label: string }[] = [
     { key: "agents", icon: <MessageSquare className="w-4 h-4" />, label: s.sidebar.agents },
     { key: "projects", icon: <FolderOpen className="w-4 h-4" />, label: s.sidebar.projects },
+    { key: "inspiration", icon: <Sparkles className="w-4 h-4" />, label: dict.studio?.inspiration?.title ?? "Inspiration" },
     { key: "brand", icon: <Brain className="w-4 h-4" />, label: s.sidebar.brand },
     { key: "settings", icon: <SettingsIcon className="w-4 h-4" />, label: s.sidebar.settings },
     { key: "notch-alt", icon: <Layers className="w-4 h-4" />, label: dict.appsHub.hub },
@@ -483,6 +485,10 @@ function MainView({
 
   if (view === "notch-alt") {
     return <NotchAltView />;
+  }
+
+  if (view === "inspiration") {
+    return <InspirationView />;
   }
 
   // settings

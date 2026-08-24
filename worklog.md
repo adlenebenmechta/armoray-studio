@@ -190,3 +190,54 @@ Stage Summary:
 - **Connections: 4 real integrations** — Meta Ads (FB Ads Manager publish-states), TikTok Ads, TikTok Creator, Canva
 - **parentSessionId:null** for first generation, will be set on child edit sessions — confirms free-edit billing architecture
 - All endpoints documented; full production API gap list compiled separately for user
+
+---
+Task ID: 10 (ARMORAY workspace inspection + agent flow capture)
+Agent: main
+Task: Switch to ARMORAY workspace, inspect the brand brain facts (23 items) and watch a live agent task to capture Notch's real agentic loop
+
+Work Log:
+- Discovered user has 3 workspaces via /api/v1/users/whoami: Holy Strips (cmt6e3nmh018osotwnpgb9slo, current), Armoray (cmro2f0ps0039pl5aj69ur9gf), ARMORAY (cmngbjlix0098iqtlklst43fn, PRIMARY with FB long-lived token + Ad Account "ARMORAY Ad Account" act_1091107308859172 with $2M spent)
+- ARMORAY user profile: displayName "ARMORAY ®", businessEmail hello@armoray.com, facebookId 2279117992623061, facebookFirstName "Dee" facebookLastName "Satti", tiktokDisplayName "Armoray", isAgencyUser:true, brandCategory "direct_ecommerce", videoOnboardingCompleted:true
+- ARMORAY has 4 FB ad accounts: Zero Trace ($90k spent), Dee Satti ($0), Beryl Naturals ($0), ARMORAY Ad Account ($2M spent)
+- Navigated to ARMORAY workspace home, fetched sessions list (10 returned, all parent:null, source:user — including "Armoray Arm Sleeves: Smug Pixar-Style Pitch for Nothing" being live)
+- Opened live chat adacbd28-21c1-40fe-92f0-bdd708b385ab — caught agent RUNNING for 12:16 on "Create product-free animated concept 0/3 Setting the product-free concept"
+- Captured full agent reasoning + tool-call trace via Activity panel:
+  1) Reasoning: "Planning tool usage" — agent decides to read state + check recipe SKILL first
+  2) Tool: "Workspace products loaded" — fetched /api/v1/workspaces/{id}/products
+  3) Tool: "Fetching video" → "Could not extract video from URL" (Instagram reel behind login wall)
+  4) Tool: "Product selected" → "Product 'Armoray Arm Sleeves' loaded"
+  5) Reasoning: "Assessing product details" — noticed product had NO images → triggered Product-Evidence Gate
+  6) Reasoning: "Clarifying image requirements" — needs front photo + scale/fit photo
+  7) Notch response: "I can't inspect that Instagram reel... Upload both and I'll continue the full build" — REFUSED to proceed without product evidence
+  8) User uploaded "Smug Pixar Salesman" avatar + said "dont promote any product"
+  9) Reasoning: "Evaluating user preferences" — honored no-product constraint
+  10) Reasoning: "Considering video format" — limited to 20s, single 15s clip + end card
+  11) Concept switch: "I'm switching the concept to a self-aware character monologue"
+  12) Reasoning: "Updating storyboard elements" — set end card state to none, product to null
+  13) Tool: "Storyboard created: 1 scenes, 1 avatar, single-clip animated talking head" (the seedStoryboard call)
+  14) Reasoning: "Reading documentation for avatar generation" — checks pre-generation checklist
+  15) Tool: "Avatar avatar-smug-salesman Generated" — CREATEAVATAR executed
+  16) Tool: "Scene video update failed" → "Failed" — first attempt failed
+  17) Reasoning: "Updating image references" — agent self-diagnosed the issue (avatar ID needed as reference source for @Image1)
+  18) Tool: "Scene video updated" — retry succeeded
+- Confirmed createAvatar produces an object named `avatar-smug-salesman` (slugified) — the avatar ID prefix matches Notch's avatar schema
+- Fetched ARMORAY brand brain facts: 23 facts stored including:
+  - memory/performance/armoray.md — latest CPA $15.57, top-performing videos
+  - memory/armoray-target-persona.md — primary persona "Ray" 64 retired
+  - memory/armoray-creative-drop-cadence.md — weekly 5 static + 5 video creatives
+  - memory/armoray-product-catalog.md — multiple product lines per brand
+  - memory/armoray-product-specs.md — material composition + UV/UPF precision rules
+  - memory/armoray-viral-reference-videos.md — uploaded TikTok references with casting guidance (Mexican faces for Spanish ads, English faces for English ads)
+  - memory/creative-style-voice-and-structure.md — voiceover rules, sound effects usage
+  - memory/holystrips-b12-viral-reference-videos.md — competitor video adaptation references
+  - memory/zero-trace-viral-reference-videos.md — "Ad Library (2)-3afd2f7b.mp4" filename reveals competitor videos are DOWNLOADED FROM META AD LIBRARY and re-uploaded to Notch
+  - memory/armoray-creative-footage-assets.md — golf POV first-person reference for scene visual
+
+Stage Summary:
+- ARMORAY workspace confirmed as primary (FB connected, agents enabled, 4 ad accounts, 23 brand facts)
+- Notch agent loop = visible reasoning + tool calls + auto-recovery from failures, fully revealed in Activity panel
+- createAvatar is the 4th task in the pipeline (confirmed via live "Avatar avatar-smug-salesman Generated" event)
+- Product-Evidence Gate confirmed as enforced (agent refused to proceed without product photo)
+- ARMORAY's brand brain stores USER-UPLOADED competitor videos (not just auto-scraped Meta Ad Library) — meaning Inspiration has TWO sources: (1) auto-scraped Meta Ad Library competitor ads, (2) user-uploaded competitor reels/TikToks
+- Ready to implement Meta Ad Library scraper + Avatar system in Armoray Studio

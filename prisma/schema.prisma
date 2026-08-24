@@ -59,5 +59,94 @@ model Scene {
   videoUrl      String?
   error         String?
   speechQa      String?
+  retryCount    Int     @default(0)
+  pronunciationNotes String?
   createdAt     DateTime @default(now())
+}
+
+// ============================================================
+// NEW: Meta Ad Library scraper models (Inspiration source)
+// ============================================================
+
+model Competitor {
+  id              String   @id @default(cuid())
+  pageUrl         String
+  pageId         String   @unique
+  name            String
+  avatar          String?  // S3 key for profile picture
+  // Snapshot of Meta Ad Library account fields
+  followersCount  Int      @default(0)
+  likeCount       Int      @default(0)
+  pageCategories String?  // JSON array
+  websiteUrls     String?  // JSON array
+  productType     String?  // PHYSICAL_GOOD / DIGITAL / etc
+  verticals       String?  // JSON [{category, subcategory}]
+  totalAdsCount   Int      @default(0)
+  totalUniqueAdsCount Int @default(0)
+  videoAdsCount   Int      @default(0)
+  imageAdsCount   Int      @default(0)
+  // Scraper state
+  lastScrapedAt   DateTime?
+  lastFetchCount  Int      @default(0)
+  lastFetchHitLimit Boolean @default(false)
+  isValidAccount  Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  ads             MetaLibraryAd[]
+}
+
+model MetaLibraryAd {
+  id              String   @id @default(cuid())
+  competitorId    String
+  competitor      Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  adArchiveId     String   // FB ad archive ID
+  startDate       DateTime?
+  endDate         DateTime?
+  // Snapshot of ad content
+  body            String?  // ad body text
+  title           String?  // ad title
+  linkUrl         String?
+  callToAction    String?
+  // Media (multiple per ad possible — store first / hero)
+  videoUrl        String?
+  imageUrl        String?
+  thumbnailUrl    String?
+  isVideo         Boolean  @default(false)
+  // Categorization
+  categories      String?  // JSON array
+  adFormat         String? // "Video", "Image", "Carousel"
+  // Tracking
+  firstSeenAt     DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+  isUnique        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([competitorId, adArchiveId])
+}
+
+// ============================================================
+// NEW: Avatar library (Higgsfield-style)
+// ============================================================
+
+model Avatar {
+  id              String   @id @default(cuid())  // internal id
+  externalId      String   @unique // e.g. "hfa_cca492eadf5716b6cbc1c2f4"
+  name            String
+  // Schema mirrors Notch's Higgsfield avatar structure
+  source          String   @default("higgsfield_licensed")
+  frameId         String?  // "hff_xxx"
+  publicUrl       String?  // poster frame URL
+  gender          String?  // "Male" / "Female" / "Non-binary"
+  ageBucket       String?  // "YoungAdult" / "Adult" / "Senior"
+  activity        String?  // "standing" / "sitting" etc
+  setting         String?  // "kitchen" / "studio" etc
+  cameraAngle     String?  // "front" / "side" etc
+  skinTone        String?  // "skin300" etc
+  vibe            String?  // descriptive mood string
+  tags            String?  // JSON array of tags
+  emotions        String?  // JSON array of supported emotions
+  // Tracking
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

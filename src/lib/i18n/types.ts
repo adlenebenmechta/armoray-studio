@@ -39,6 +39,35 @@ export interface Dictionary {
   };
   studio: {
     sidebar: { newProject: string; agents: string; projects: string; brand: string; settings: string; backToSite: string };
+    inspiration: {
+      title: string;
+      subtitle: string;
+      addCompetitor: string;
+      competitorName: string;
+      pageId: string;
+      pageUrl: string;
+      addBtn: string;
+      sync: string;
+      noAds: string;
+      videosOnly: string;
+      metaNotConfigured: string;
+      adsCount: string;
+      videos: string;
+      images: string;
+      lastScraped: string;
+      never: string;
+      avatarPicker: string;
+      avatarSubtitle: string;
+      all: string;
+      female: string;
+      male: string;
+      senior: string;
+      ugc: string;
+      studio: string;
+      outdoor: string;
+      useAsRef: string;
+      selected: string;
+    };
     chat: {
       agentName: string;
       agentRole: string;
