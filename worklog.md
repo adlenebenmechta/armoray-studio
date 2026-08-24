@@ -241,3 +241,31 @@ Stage Summary:
 - Product-Evidence Gate confirmed as enforced (agent refused to proceed without product photo)
 - ARMORAY's brand brain stores USER-UPLOADED competitor videos (not just auto-scraped Meta Ad Library) — meaning Inspiration has TWO sources: (1) auto-scraped Meta Ad Library competitor ads, (2) user-uploaded competitor reels/TikToks
 - Ready to implement Meta Ad Library scraper + Avatar system in Armoray Studio
+
+---
+Task ID: 11 (Inspiration + Avatars implementation + final API list)
+Agent: main
+Task: Build Meta Ad Library scraper + Higgsfield avatar library in Armoray Studio, push to GitHub/Vercel, then list every API needed for production with explanation
+
+Work Log:
+- Added 3 new Prisma models: Competitor (pageId unique, scrape state fields), MetaLibraryAd (FK to Competitor, adArchiveId + body + videoUrl + thumbnailUrl + dates, @@unique [competitorId, adArchiveId]), Avatar (Higgsfield-style schema with externalId unique, gender/ageBucket/activity/setting/cameraAngle/skinTone/vibe/tags/emotions)
+- Added retryCount Int @default(0) and pronunciationNotes String? to Scene model (for corrective regen support)
+- Built src/lib/inspiration/metaAdLibrary.ts: addCompetitor (auto-creates Competitor row, kicks off async scrape), scrapeCompetitorAds (Meta Graph API v18.0 ads_archive with paging — fetches id/ad_creation_time/ad_creative_bodies/ad_creative_link_titles/ad_creative_videos/ad_creative_images/ad_delivery_start_time/ad_delivery_stop_time, upserts by [competitorId, adArchiveId], 250-ad safety limit per scrape), listInspirationAds (paged + filter by competitor/video/unique), getInspirationStatus (returns metaConfigured + competitor stats). Degrades gracefully to "meta_env_missing" when META_APP_ID/SECRET/TOKEN not set.
+- Built src/lib/avatars/library.ts: 12-avatar seeded library (Maya, Daniel, Sophia, Marcus, Aria, Liam, Zara, Noah, Priya, Ethan, Ava, Lucas) with Higgsfield schema (externalId prefix hfa_demo_, frameId prefix hff_demo_, source higgsfield_licensed). listAvatars filters by gender/ageBucket/setting/tag. Ready for real Higgsfield sync hook (hasHiggsfield() checks env).
+- Built 3 new API routes:
+  - GET/POST /api/inspiration/competitors — list competitors + add by pageId+name+pageUrl
+  - POST /api/inspiration/competitors/[id]/scrape — trigger re-scrape
+  - GET /api/inspiration/ads?perPage=21&page=1&sortBy=startDate&order=desc&onlyVideo=false&competitorId=...&status=true — paged ads + status
+  - GET /api/avatars?gender=&ageBucket=&setting=&tag=&limit=500 — avatar library
+- Built src/components/studio/InspirationView.tsx (~520 lines): 4 sections — Competitor cards (avatar/followers/ads-count/last-scrape/Re-scrape button), Ads gallery (9:16 aspect cards, video play overlay, pagination), Avatar library (filter chips for All/Female/Male/YoungAdult/Adult/Senior, 8-column grid with select-state ring)
+- Added inspiration.* keys (28 strings) to en/ar/fr dictionaries + types.ts — fully localized with RTL support
+- Added 6th nav item "Inspiration" in StudioApp sidebar between Projects and Brand Brain
+- npx next build succeeded — 4 new routes (/api/avatars, /api/inspiration/ads, /api/inspiration/competitors, /api/inspiration/competitors/[id]/scrape) all registered
+- Pushed commit to GitHub (e6eaad5)
+- Verified TypeScript clean (no new errors in src/)
+
+Stage Summary:
+- Inspiration source (Meta Ad Library scraper) fully implemented in Armoray Studio — schema, lib, API, UI, i18n
+- Avatar library (Higgsfield-style schema + 12 demo avatars + UI picker) fully implemented
+- All code committed and pushed to GitHub/Vercel
+- Final API list compiled below for user delivery
