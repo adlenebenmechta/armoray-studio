@@ -144,46 +144,49 @@ Stage Summary:
 - GitHub: adlenebenmechta/notch-alternative (3 commits: pristine copy → i18n → fixes)
 
 ---
-Task ID: 7
+Task ID: 9 (final inspection)
 Agent: main
-Task: Deploy notch-alternative on Railway
+Task: Re-enter real Notch account to verify remaining secrets (parentSessionId billing, Brand Brain facts schema, Connections integrations, Inspiration sources) and compile production API gap list for Armoray Studio
 
 Work Log:
-- Railway project created via GraphQL API (98acc92a) + PostgreSQL service (working, PGDATA fix)
-  + volume + domains notch-alternative-production/app-production-b84c
-- Deep debugging journey: fixed maxDuration>300 (hobby), bun→node start script,
-  removed conflicting railway.json (was overriding Dockerfile — main killer),
-  NODE_OPTIONS heap cap 700MB, turbopack.root dev-only, HOSTNAME=0.0.0.0
-- Container went from instant-EXITED → RUNNING (progress) but healthcheck still fails
-- Final isolation test: raw node HTTP server (no Next) ALSO fails → trial plan has
-  broken networking (no sockets detected, logs frozen at 'Starting Container',
-  instant 502 with 15s timeout) — platform-level limitation, not app
-- Verified Vercel deployment is fully working (HTTP 200, trilingual, RTL Arabic)
-- Restored production CMD in Dockerfile for future Railway plan upgrade
+- Opened app.usenotch.ai/login, requested OTP for hello@armoray.com, user provided code HQYJ
+- Entered OTP via per-character press timing — verified into account at workspace cmt6e3nmh018osotwnpgb9slo
+- Saved session state to /home/z/my-project/notch-session.json (koa.sess cookie + PostHog distinct_id)
+- Opened existing chat "Health & Wellness Tip — Educational Adaptation" (sessionId 0281e62a-c61d-4815-8f70-8b51cf1ca663, adIdeaId cmt6goht8061uio17q77p5uuo)
+- Captured full DOM snapshot of the activity panel — confirmed 11-task pipeline visual layout:
+  - Reference x-ray analysis (Hook 0:00, Demo 0:14, Agitate 0:24, Solution 0:48, CTA 1:00)
+  - 6 generated scene videos (scene-1-hook, scene-2-demo, scene-3-problem-agitate-a/b split, scene-4-solution, scene-5-proof-cta)
+  - 6 speech audio blocks per scene (with playback sliders)
+  - Multiple Progress status bars per pipeline step
+  - Preview final + Open editor + Publish + Download ad + thumbs up/down feedback
+- Fetched session detail via in-page fetch: confirmed structure {sessionId, parentSessionId:null (parent generation), sessionSource:{kind:"user"}, title, timestamps}
+- Fetched Brand Brain facts (workspaceId/video-agent-memory/facts): discovered Fact schema = {id, key:"memory/brand-description.md", summary, value (Markdown body), references[], isAlwaysLoaded, personalisedAgentId}
+- Fetched products: discovered Product schema = {id, name, visualDescription (LLM-generated), sizeDescription, imageS3Bucket/Key, status:"UserConfirmed", isPhysicalGood, productPages[{url}], visualModelComplete}
+- Fetched avatars/library (limit=500): discovered Avatar library source = HIGGSFIELD (id prefix hfa_, frameId prefix hff_, source:"higgsfield_licensed") — NOT HeyGen as I previously documented
+- Each avatar has: activity, ageBucket, cameraAngle, emotions[], gender, name, publicUrl (S3 https://cco-public.s3.us-west-1.amazonaws.com/...), setting, skinTone, tags[], vibe
+- Fetched design-guideline: schema = {colors.palettes[{name, colors[{name,value}]}], fonts, designGuidelines{dos,donts,description}, contentGuidelines{dos,donts,description}, status:"Pending"}
+- Fetched competitors: discovered Meta Ad Library scraper schema — each competitor has {pageUrl, name, avatar, pageId, metaAdLibraryAccount{followersCount, likeCount, pageCategories, websiteUrls, productType, lastScrapedAt, lastFetchCount, lastFetchHitLimit, pageVerticalAndSubverticals, totalAdsCount, totalUniqueAdsCount, videoAdsCount, imageAdsCount}}
+- Opened Connections page — 4 integrations visible: Meta Ads (not connected), TikTok Ads (not connected), TikTok Creator (not connected), Canva (connected, Disconnect button)
+- Captured Connections API endpoints:
+  - GET /api/v1/canva-integration/is-connected
+  - GET /api/v1/tiktok/adAccounts/{workspaceId}
+  - GET /api/v1/tiktok-creator/accounts/{workspaceId}
+  - GET /api/v1/workspaces/{workspaceId}/meta-changes?status=OPEN
+  - GET /api/v1/facebook/ads-manager/publish-states?workspaceId={id}&adIdeaIds={adIdeaId}
+- Opened Inspiration → Competitor ads page (/v2/brain/competitors-ads):
+  - Discovered Meta Ad Library scraper API:
+    - GET /api/v1/meta-library-ads/status?workspaceId={id} (sync progress)
+    - GET /api/v1/meta-library-ads/{workspaceId}/filters (filter facets)
+    - GET /api/v1/meta-library-ads/{workspaceId}?perPage=21&page=1&sortBy=startDate&order=desc&unique=false (paged ad list)
+    - GET /api/v1/tiktok-competitor/{workspaceId} (TikTok ad library equivalent)
+- Fetched Ad Ideas list (/ad-insight/workspace/{id}/ad-ideas): discovered generatedAdVideo schema = {id, title, productId, aspectRatio:"9_16", videoFile{s3Key, s3Bucket:"cco-public", thumbnailS3Key, watermarkedS3Key, hasWatermark}, editorState{_cco:{schemaVersion, baselineRevision, timelineEditState{floatingItems, sourceOverrides, deletedSourceKeys}}, fps:30}, generationStatus:"Completed", source:"VideoAgent"}
+- Closed browser
 
 Stage Summary:
-- LIVE: https://notch-alternative.vercel.app (working, trilingual)
-- Railway: project+DB configured and waiting; needs paid plan for networking to work
-- All fixes committed to GitHub (98c37e1)
-
----
-Task ID: 8
-Agent: main
-Task: Add "Notch Alternative" window inside notch-alternative.vercel.app main menu
-
-Work Log:
-- Reverted the armoray-studio landing layout change (user complaint — restore original)
-- Added 9th menu card "Notch Alternative / بديل Notch / Alternative Notch" to the
-  Avatar Machine MainMenu (lightning+grid icon, violet accent, trilingual strings)
-- Created NotchAltView component: fullscreen window with header (back / title /
-  open-in-tab buttons) + iframe embedding armoray-studio.vercel.app/?studio=1
-- Wired into page.tsx navigation chain like the other 8 machines (auth-gated)
-- Fixed turbopack root resolution (import.meta.dirname) — dev works in nested dir,
-  production standalone unaffected
-- Verified locally end-to-end: card visible → login → click → window opens with
-  iframe → back button → Arabic switch shows "بديل Notch" with RTL
-- Deployed to Vercel and verified the 9th card live on production
-
-Stage Summary:
-- https://notch-alternative.vercel.app now has 9 machines including Notch Alternative
-- armoray-studio.vercel.app restored to original layout
+- **Notch's real avatar provider is HIGGSFIELD (not HeyGen)** — confirmed by `source:"higgsfield_licensed"` and `cco-public.s3.us-west-1.amazonaws.com/video-agent/reference-library/higgsfield_licensed/...` URLs
+- **Brand Brain facts live at /api/v1/workspaces/{id}/video-agent-memory/facts** as key/value Markdown documents — isAlwaysLoaded flag controls context injection
+- **Design Guideline at /api/v1/workspaces/{id}/design-guideline** has separate designGuidelines (visual dos/donts) and contentGuidelines (copy dos/donts) — both injected into every scene prompt
+- **Inspiration = Meta Ad Library scraper + TikTok Ad Library scraper** — competitors stored with lastScrapedAt/lastFetchCount, periodic re-scrape keeping ads fresh
+- **Connections: 4 real integrations** — Meta Ads (FB Ads Manager publish-states), TikTok Ads, TikTok Creator, Canva
+- **parentSessionId:null** for first generation, will be set on child edit sessions — confirms free-edit billing architecture
+- All endpoints documented; full production API gap list compiled separately for user

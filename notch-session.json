@@ -1,0 +1,188 @@
+{
+  "cookies": [
+    {
+      "name": "notch_mp_anon_id",
+      "value": "06a45049-a7bc-4712-9e69-6e19cae8ef36",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1819103782.598056,
+      "size": 52,
+      "httpOnly": false,
+      "secure": false,
+      "session": false
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1884951530.1787567783",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1822127782.756117,
+      "size": 30,
+      "httpOnly": false,
+      "secure": false,
+      "session": false
+    },
+    {
+      "name": "_fbp",
+      "value": "fb.1.1787567783427.125575698495956829",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1795343783.0,
+      "size": 41,
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.893180792.1787567783.1521255128.1787567796.1787567795.856765930.1787567796.1787567795",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1795343783.0,
+      "size": 96,
+      "httpOnly": false,
+      "secure": false,
+      "session": false
+    },
+    {
+      "name": "IDE",
+      "value": "AHWqTUnHDUxHq6LqfMceTXZdhq8-yN-INOXDP-xZ6r5xkdgF0Xp80_JSstEn1qfA",
+      "domain": ".doubleclick.net",
+      "path": "/",
+      "expires": 1822127795.980947,
+      "size": 67,
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "g_state",
+      "value": "{\"i_l\":0,\"i_ll\":1787567796373,\"i_b\":\"vDcHjoMjJ/CK/2Wt8NDBvlnuRM6zxwScgtnbA9P+fCQ\",\"i_e\":{\"enable_itp_optimization\":24},\"i_et\":1787567796373}",
+      "domain": "app.usenotch.ai",
+      "path": "/",
+      "expires": 1803119796.0,
+      "size": 147,
+      "httpOnly": false,
+      "secure": false,
+      "session": false
+    },
+    {
+      "name": "cco_device_id",
+      "value": "f0dbcdfb-9fab-46ba-b495-26d60586f0e4",
+      "domain": "app.usenotch.ai",
+      "path": "/",
+      "expires": 1819103847.896082,
+      "size": 49,
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "cco_device_id.sig",
+      "value": "btphWyt207juRBE_Xn-JouiJBB0",
+      "domain": "app.usenotch.ai",
+      "path": "/",
+      "expires": 1819103847.896248,
+      "size": 44,
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "koa.sess",
+      "value": "65f6eecb-5844-467f-92af-5243b0eb4c1f",
+      "domain": "app.usenotch.ai",
+      "path": "/",
+      "expires": 1790159847.896269,
+      "size": 44,
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "koa.sess.sig",
+      "value": "bvWh_VAfE1z8IkqKDjBEzUsOA2c",
+      "domain": "app.usenotch.ai",
+      "path": "/",
+      "expires": 1790159847.896296,
+      "size": 39,
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga_3MLLK3VBVV",
+      "value": "GS2.1.s1787567782$o1$g1$t1787567850$j60$l0$h0",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1822127850.601657,
+      "size": 59,
+      "httpOnly": false,
+      "secure": false,
+      "session": false
+    },
+    {
+      "name": "ph_phc_rYxu6Ug3MBMWj9ftbV3bDKeKHRE39CfXHUMznPkzXQQm_posthog",
+      "value": "%7B%22%24device_id%22%3A%2201a03357-baf2-794d-ba8d-894b487c2476%22%2C%22distinct_id%22%3A%22cmngbjlhd0096iqtlykj35inj%22%2C%22%24sesid%22%3A%5B1787567851010%2C%2201a03357-c07a-77f1-9c2c-ef662cfbefa5%22%2C1787567784058%5D%2C%22%24epp%22%3Atrue%2C%22%24user_state%22%3A%22identified%22%7D",
+      "domain": ".usenotch.ai",
+      "path": "/",
+      "expires": 1819103859.0,
+      "size": 345,
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://app.usenotch.ai",
+      "localStorage": [
+        {
+          "name": "notch_mp_aliased_06a45049-a7bc-4712-9e69-6e19cae8ef36",
+          "value": "1787567848576"
+        },
+        {
+          "name": "lastExternalReferrer",
+          "value": "empty"
+        },
+        {
+          "name": "_gcl_ls",
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gsid_dc\":{\"value\":{\"joinId\":\"pBzZU2OHDPi_PjCbnPzZdzJTMA0Z8Q6Xvw\",\"lastJoinedTimeMs\":1787567850603},\"expires\":1787568150603},\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"errors\":0,\"eopCount\":0,\"creationTimeMs\":1787567782769},\"expires\":1795343782769}}"
+        },
+        {
+          "name": "lastExternalReferrerTime",
+          "value": "1787567783412"
+        },
+        {
+          "name": "selectedWorkspaceId",
+          "value": "cmt6e3nmh018osotwnpgb9slo"
+        },
+        {
+          "name": "ph_phc_rYxu6Ug3MBMWj9ftbV3bDKeKHRE39CfXHUMznPkzXQQm_posthog",
+          "value": "{\"$user_state\":\"identified\",\"$sesid\":[1787567851010,\"01a03357-c07a-77f1-9c2c-ef662cfbefa5\",1787567784058],\"distinct_id\":\"cmngbjlhd0096iqtlykj35inj\",\"$device_id\":\"01a03357-baf2-794d-ba8d-894b487c2476\",\"$last_posthog_reset\":\"2026-08-24T10:36:22.976Z\",\"$error_tracking_suppression_rules\":[],\"$session_recording_remote_config\":{\"cache_timestamp\":1787567784059,\"enabled\":true,\"canvasFps\":null,\"canvasQuality\":null,\"consoleLogRecordingEnabled\":true,\"endpoint\":\"/s/\",\"eventTriggers\":[],\"linkedFlag\":null,\"masking\":null,\"minimumDurationMilliseconds\":null,\"networkPayloadCapture\":{\"capturePerformance\":{\"network_timing\":true,\"web_vitals\":true,\"web_vitals_allowed_metrics\":null}},\"recordCanvas\":false,\"recorderVersion\":\"v2\",\"sampleRate\":null,\"scriptConfig\":{\"script\":\"posthog-recorder\"},\"triggerMatchType\":null,\"urlBlocklist\":[],\"urlTriggers\":[],\"version\":1,\"canvasRecording\":{\"enabled\":false,\"fps\":null,\"quality\":null}},\"$autocapture_disabled_server_side\":false,\"$product_tours_enabled_server_side\":false,\"$heatmaps_enabled_server_side\":true,\"$web_vitals_enabled_server_side\":true,\"$web_vitals_allowed_metrics\":null,\"$exception_capture_enabled_server_side\":false,\"$dead_clicks_enabled_server_side\":false,\"$feature_flag_errors\":[],\"$active_feature_flags\":[],\"$enabled_feature_flags\":{},\"$feature_flag_payloads\":{},\"$feature_flag_details\":{},\"$feature_flag_request_id\":\"20fc584b-5dc9-43a3-8825-0da73565c874\",\"$feature_flag_evaluated_at\":1787567848382,\"$client_session_props\":{\"sessionId\":\"01a03357-c07a-77f1-9c2c-ef662cfbefa5\",\"props\":{\"r\":\"$direct\",\"u\":\"https://app.usenotch.ai/login\"}},\"$debug_first_full_snapshot_timestamp\":1787567784087,\"$sess_rec_flush_size\":{\"sessionId\":\"01a03357-c07a-77f1-9c2c-ef662cfbefa5\",\"size\":507338},\"$epp\":true,\"$user_id\":\"cmngbjlhd0096iqtlykj35inj\",\"$stored_person_properties\":{\"email\":\"hello@armoray.com\",\"name\":\"ARMORAY ®\"}}"
+        }
+      ],
+      "sessionStorage": [
+        {
+          "name": "ph_phc_rYxu6Ug3MBMWj9ftbV3bDKeKHRE39CfXHUMznPkzXQQm_window_id",
+          "value": "\"01a03357-c07a-77f1-9c2c-ef67d8b61ff5\""
+        },
+        {
+          "name": "ph_phc_rYxu6Ug3MBMWj9ftbV3bDKeKHRE39CfXHUMznPkzXQQm_posthog",
+          "value": "{\"$sdk_debug_replay_remote_trigger_matching_config\":null,\"$sdk_debug_replay_event_trigger_status\":\"trigger_disabled\",\"$sdk_debug_replay_url_trigger_status\":\"trigger_disabled\",\"$sdk_debug_replay_linked_flag_trigger_status\":\"trigger_disabled\",\"$session_recording_start_reason\":\"recording_initialized\"}"
+        },
+        {
+          "name": "ph_phc_rYxu6Ug3MBMWj9ftbV3bDKeKHRE39CfXHUMznPkzXQQm_primary_window_exists",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}
