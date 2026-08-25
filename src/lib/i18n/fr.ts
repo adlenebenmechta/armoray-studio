@@ -153,7 +153,8 @@ export const fr: Dictionary = {
       analysis: {
         title: "Analyse de structure", hook: "Accroche", structure: "Structure de persuasion", tone: "Ton", pacing: "Rythme",
         scenes: "Scènes", scene: "Scène", camera: "Caméra", onScreen: "À l'écran", xray: "Radiographie de la référence", format: "Format",
-        roles: { hook: "Accroche", demo: "Démo", proof: "Preuve", cta: "CTA" } as Record<string, string>,
+        shots: "plans", people: "personnes", framework: "Cadre", cuts: "coupes",
+        roles: { hook: "Accroche", demo: "Démo", proof: "Preuve", cta: "CTA", problem: "Problème", solution: "Solution", agitate: "Aggravation" } as Record<string, string>,
         productScene: "Plan produit", seconds: "s",
       },
       product: { title: "Produit", edit: "Modifier" },
@@ -162,9 +163,19 @@ export const fr: Dictionary = {
         pending: "En attente", generating: "Génération…", done: "Prêt", error: "Échec",
         speechQa: "Contrôle vocal", words: "mots", wps: "mots/s", passed: "Réussi", failed: "Autre prise nécessaire",
         hookLine: "Nouvelle accroche", ctaLine: "Nouveau CTA",
-        roles: { hook: "Accroche", demo: "Démo", proof: "Preuve", cta: "CTA" } as Record<string, string>,
+        speechMap: "Carte vocale", tightenTiming: "Serrer le timing", setPace: "Régler le rythme", listenBack: "Réécouter",
+        removed: "retiré", targetWps: "Cible", evidence: "Preuves requises",
+        roles: { hook: "Accroche", demo: "Démo", proof: "Preuve", cta: "CTA", problem: "Problème", solution: "Solution", agitate: "Aggravation" } as Record<string, string>,
       },
-      result: { title: "Votre pub clonée", download: "Télécharger", sceneN: "Scène" },
+      result: {
+        title: "Votre pub clonée", download: "Télécharger", sceneN: "Scène",
+        assemblyTitle: "Votre pub vidéo", finalVideo: "Vidéo finale", endCard: "Carton final",
+        autoTitle: "Titre de session", aRoll: "Piste A", bRoll: "Piste B", render: "Rendu terminé", aspect: "9:16",
+      },
+      intake: {
+        required: "Requis", optional: "optionnel", attach: "Joindre", attachFile: "Joindre un fichier",
+        typeHere: "Tapez ici…", submit: "Envoyer les détails", gateNote: "L'agent continuera après votre réponse.", remove: "Retirer",
+      },
     },
     productDialog: {
       title: "Ajoutez votre produit",
@@ -197,7 +208,7 @@ export const fr: Dictionary = {
         pipelineText: "1) Extraction images + audio → 2) Analyse de structure par IA Vision → 3) Réécriture du script pour votre produit → 4) Génération vidéo scène par scène (image-vers-vidéo pour les plans produit) → 5) Assemblage du storyboard avec voix off.",
       },
     },
-    status: { chat: "Brouillon", analyzing: "Analyse", analyzed: "Analysé", adapting: "Adaptation", adapted: "Storyboard prêt", generating: "Génération", done: "Terminé", error: "Erreur" },
+    status: { chat: "Brouillon", analyzing: "Analyse", analyzed: "Analysé", adapting: "Adaptation", adapted: "Storyboard prêt", generating: "Génération", done: "Terminé", error: "Erreur", evidence_gate: "Preuves produit", packaged: "Emballé" },
     errors: {
       uploadFailed: "Lecture de la vidéo impossible. Essayez un MP4 de moins de 100 Mo.",
       analyzeFailed: "Échec de l'analyse. Essayez une autre vidéo.",

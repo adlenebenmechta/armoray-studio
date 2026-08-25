@@ -22,6 +22,12 @@ model Project {
   productImage  String?
   productSize   String?
   productFacts  String?
+  // Product-Evidence Gate state (Notch's intake_form checkpoint)
+  evidenceGate  String?  // JSON IntakeForm — set while the gate is open
+  // Final assembly state (Notch's packaging stage)
+  assembly      String?  // JSON AssemblyResult
+  autoTitle     String?  // LLM-generated session title
+  endCardUrl    String?  // generated branded end card image
   credits       Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -51,6 +57,11 @@ model Scene {
   onScreenText  String?
   duration      Float   @default(5)
   isProductScene Boolean @default(false)
+  // Notch x-ray fields
+  startSec      Float   @default(0)
+  endSec        Float   @default(5)
+  shotStartsSec String?  // JSON number[] — cut points inside the scene
+  evidenceNeeded String? // JSON string[] — product facts this scene requires
   newPrompt     String?
   newVoiceover  String?
   onScreenNew   String?

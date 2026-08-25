@@ -23,8 +23,25 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
     let facts: string[] = [];
     try {
-      facts = project.productFacts ? JSON.parse(project.productFacts) : [];
+      const raw = project.productFacts ? JSON.parse(project.productFacts) : null;
+      if (Array.isArray(raw)) {
+        facts = raw.map(String);
+      } else if (raw && typeof raw === "object") {
+        // Product-Evidence Gate answers: { "size": "...", "open-mechanism": "...", ... }
+        facts = Object.entries(raw as Record<string, string>)
+          .filter(([k, v]) => v && String(v).trim() && k !== "contents-photo")
+          .map(([k, v]) => `${k.replace(/-/g, " ")}: ${String(v).trim()}`);
+      }
     } catch {}
+
+    // Block adaptation while the evidence gate is still open (Notch holds
+    // generation at the product-evidence checkpoint)
+    if (project.evidenceGate) {
+      return NextResponse.json(
+        { error: "evidence_gate_open", evidenceGate: JSON.parse(project.evidenceGate) },
+        { status: 428 }
+      );
+    }
 
     const adaptation = await adaptScriptForProduct(
       analysis,

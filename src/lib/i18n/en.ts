@@ -153,7 +153,8 @@ export const en: Dictionary = {
       analysis: {
         title: "Structure analysis", hook: "Hook", structure: "Persuasion structure", tone: "Tone", pacing: "Pacing",
         scenes: "Scenes", scene: "Scene", camera: "Camera", onScreen: "On-screen", xray: "Reference X-Ray", format: "Format",
-        roles: { hook: "Hook", demo: "Demo", proof: "Proof", cta: "CTA" } as Record<string, string>,
+        shots: "shots", people: "people", framework: "Framework", cuts: "cuts",
+        roles: { hook: "Hook", demo: "Demo", proof: "Proof", cta: "CTA", problem: "Problem", solution: "Solution", agitate: "Agitate" } as Record<string, string>,
         productScene: "Product shot", seconds: "s",
       },
       product: { title: "Product", edit: "Edit" },
@@ -162,9 +163,19 @@ export const en: Dictionary = {
         pending: "Pending", generating: "Generating…", done: "Ready", error: "Failed",
         speechQa: "Speech QA", words: "words", wps: "w/s", passed: "Passed", failed: "Needs another take",
         hookLine: "New hook", ctaLine: "New CTA",
-        roles: { hook: "Hook", demo: "Demo", proof: "Proof", cta: "CTA" } as Record<string, string>,
+        speechMap: "Map speech", tightenTiming: "Tighten timing", setPace: "Set pace", listenBack: "Listen back",
+        removed: "removed", targetWps: "Target", evidence: "Evidence needed",
+        roles: { hook: "Hook", demo: "Demo", proof: "Proof", cta: "CTA", problem: "Problem", solution: "Solution", agitate: "Agitate" } as Record<string, string>,
       },
-      result: { title: "Your cloned ad", download: "Download", sceneN: "Scene" },
+      result: {
+        title: "Your cloned ad", download: "Download", sceneN: "Scene",
+        assemblyTitle: "Your video ad", finalVideo: "Final video", endCard: "End card",
+        autoTitle: "Session title", aRoll: "A-roll", bRoll: "B-roll", render: "Render complete", aspect: "9:16",
+      },
+      intake: {
+        required: "Required", optional: "optional", attach: "Attach", attachFile: "Attach file",
+        typeHere: "Type here…", submit: "Submit details", gateNote: "Agent will continue after your reply.", remove: "Remove",
+      },
     },
     productDialog: {
       title: "Add your product",
@@ -197,7 +208,7 @@ export const en: Dictionary = {
         pipelineText: "1) Frame + audio extraction → 2) Vision AI structure analysis → 3) Script rewriting for your product → 4) Scene-by-scene video generation (image-to-video for product shots) → 5) Storyboard assembly with voiceover.",
       },
     },
-    status: { chat: "Draft", analyzing: "Analyzing", analyzed: "Analyzed", adapting: "Adapting", adapted: "Storyboard ready", generating: "Generating", done: "Completed", error: "Error" },
+    status: { chat: "Draft", analyzing: "Analyzing", analyzed: "Analyzed", adapting: "Adapting", adapted: "Storyboard ready", generating: "Generating", done: "Completed", error: "Error", evidence_gate: "Product evidence", packaged: "Packaged" },
     errors: {
       uploadFailed: "Could not read the video file. Try an MP4 under 100MB.",
       analyzeFailed: "Analysis failed. Please try another video.",

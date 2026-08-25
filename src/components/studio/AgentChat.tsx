@@ -43,6 +43,10 @@ export interface SceneData {
   onScreenText?: string | null;
   duration: number;
   isProductScene: boolean;
+  startSec?: number;
+  endSec?: number;
+  shotStartsSec?: string | null;
+  evidenceNeeded?: string | null;
   newPrompt?: string | null;
   newVoiceover?: string | null;
   onScreenNew?: string | null;
@@ -65,6 +69,12 @@ export interface ProjectData {
   productUrl?: string | null;
   productDesc?: string | null;
   productImage?: string | null;
+  productSize?: string | null;
+  productFacts?: string | null;
+  evidenceGate?: string | null;
+  assembly?: string | null;
+  autoTitle?: string | null;
+  endCardUrl?: string | null;
   scenes: SceneData[];
 }
 
@@ -83,6 +93,25 @@ interface AnalysisMeta {
   pacing: string;
   summary: string;
   format: string;
+  stats?: { framework: string; sceneCount: number; shotCount: number; peopleCount: number };
+  subtitle?: string;
+}
+
+interface IntakeFieldMeta {
+  id: string;
+  aspect: string;
+  prompt: string;
+  required: boolean;
+  inputType: "text" | "none";
+  attachment: string;
+  allowCustomText: boolean;
+}
+
+interface IntakeFormMeta {
+  type: "intake_form";
+  title: string;
+  gateReason: string;
+  fields: IntakeFieldMeta[];
 }
 
 let msgSeq = 0;
@@ -258,6 +287,12 @@ export default function AgentChat({
       const analysis = data.analysis;
       pushAgent(c.analyzedIntro + (analysis.summary ? `\n\n${analysis.summary}` : ""), "analysis", { analysis });
       await saveMsg("agent", "analysis", c.analyzedIntro, { analysis });
+
+      // ── PRODUCT-EVIDENCE GATE (Notch's intake_form checkpoint) ─────
+      if (data.intakeForm && data.gateMessage) {
+        pushAgent(data.gateMessage, "intake", { intakeForm: data.intakeForm });
+        await saveMsg("agent", "intake", data.gateMessage, { intakeForm: data.intakeForm });
+      }
     } catch (e) {
       pushAgent(dict.studio.errors.analyzeFailed, "error");
     } finally {
@@ -311,6 +346,13 @@ export default function AgentChat({
     setAgentThinking(true);
     try {
       const res = await fetch(`/api/projects/${project.id}/adapt`, { method: "POST" });
+      if (res.status === 428) {
+        const data = await res.json();
+        if (data.evidenceGate) {
+          pushAgent(dict.studio.cards.intake.gateNote, "intake", { intakeForm: data.evidenceGate });
+        }
+        return;
+      }
       if (!res.ok) throw new Error();
       const data = await res.json();
       onProjectUpdate(data.project);
@@ -341,6 +383,14 @@ export default function AgentChat({
     setBusy(true);
     try {
       const res = await fetch(`/api/projects/${project.id}/generate`, { method: "POST" });
+      if (res.status === 428) {
+        // evidence gate still open — show the intake form again
+        const data = await res.json();
+        if (data.evidenceGate) {
+          pushAgent(dict.studio.cards.intake.gateNote, "intake", { intakeForm: data.evidenceGate });
+        }
+        return;
+      }
       if (!res.ok) throw new Error();
       const data = await res.json();
       onProjectUpdate(data.project);
@@ -352,6 +402,47 @@ export default function AgentChat({
       await saveMsg("agent", "storyboard", genMsg, { generating: true, isEdit: data.isEdit });
     } catch {
       pushAgent(dict.studio.errors.generateFailed, "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleIntakeSubmit(
+    form: IntakeFormMeta,
+    answers: Record<string, string>,
+    attachments: Record<string, string>
+  ) {
+    if (!project || busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/projects/${project.id}/intake`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers, attachments }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      onProjectUpdate(data.project);
+      // echo the answers as the user turn — exactly like Notch
+      const echo = form.fields
+        .map((f) => {
+          const v = answers[f.id] ?? answers[f.aspect] ?? "";
+          const att = attachments[f.aspect] ? " — 📎" : "";
+          return `${f.prompt}: ${v || "—"}${att}`;
+        })
+        .join("\n");
+      pushUser(echo, "text");
+      await saveMsg("user", "text", echo);
+      const cont: string =
+        locale === "ar"
+          ? "ممتاز — الأدلة محفوظة. سأستخدم هذه الحقائق في كل مشهد (الحجم الصحيح في اليد، آلية الفتح، الشكل الداخلي) لضمان تطابق المنتج. جاهز للتوليد الآن."
+          : locale === "fr"
+            ? "Parfait — preuves enregistrées. J'utiliserai ces faits dans chaque scène (échelle correcte en main, mécanisme d'ouverture, aspect intérieur) pour une fidélité produit totale. Prêt à générer."
+            : "Perfect — evidence saved. I'll inject these facts into every scene (correct in-hand scale, opening mechanism, interior look) for full product fidelity. Ready to generate.";
+      pushAgent(cont, "text");
+      await saveMsg("agent", "text", cont);
+    } catch {
+      pushAgent(dict.studio.errors.generic, "error");
     } finally {
       setBusy(false);
     }
@@ -447,6 +538,8 @@ export default function AgentChat({
             analysis={analysis}
             onListen={handleListen}
             ttsBusy={ttsBusy}
+            onIntakeSubmit={handleIntakeSubmit}
+            busy={busy}
           />
         ))}
         {stageMsg && (
@@ -637,12 +730,16 @@ function ChatMessage({
   analysis,
   onListen,
   ttsBusy,
+  onIntakeSubmit,
+  busy,
 }: {
   msg: ChatMsg;
   project: ProjectData | null;
   analysis: AnalysisMeta | null;
   onListen: (s: SceneData) => void;
   ttsBusy: string | null;
+  onIntakeSubmit: (form: IntakeFormMeta, answers: Record<string, string>, attachments: Record<string, string>) => void;
+  busy: boolean;
 }) {
   const { dict } = useLang();
   const c = dict.studio.cards;
@@ -672,13 +769,19 @@ function ChatMessage({
         N
       </div>
       <div className="flex flex-col gap-2 min-w-0 max-w-[92%] md:max-w-[78%]">
-        {msg.content && (
+        {msg.content ? (
           <div className="rounded-2xl rounded-es-sm bg-card border border-border px-4 py-3 text-sm whitespace-pre-wrap shadow-sm">
-            {msg.content}
+            {String(msg.content)}
           </div>
-        )}
+        ) : null}
         {msg.kind === "video" && null}
         {msg.kind === "analysis" && analysis && <AnalysisCard analysis={analysis} scenes={project?.scenes ?? []} />}
+        {msg.kind === "intake" && (() => {
+          const intakeForm = (msg.meta?.intakeForm ?? null) as IntakeFormMeta | null;
+          return intakeForm ? (
+            <IntakeFormCard form={intakeForm} busy={busy} onSubmit={onIntakeSubmit} />
+          ) : null;
+        })()}
         {msg.kind === "product" && project?.productName && (
           <Card className="overflow-hidden">
             <CardContent className="p-4 space-y-3">
@@ -695,7 +798,7 @@ function ChatMessage({
           </Card>
         )}
         {msg.kind === "storyboard" && <StoryboardCard scenes={project?.scenes ?? []} onListen={onListen} ttsBusy={ttsBusy} />}
-        {msg.kind === "result" && <ResultCard scenes={project?.scenes ?? []} />}
+        {msg.kind === "result" && <ResultCard scenes={project?.scenes ?? []} project={project} />}
       </div>
     </div>
   );
@@ -703,43 +806,115 @@ function ChatMessage({
 
 // ---------- CARDS ----------
 
+function shotsOf(s: SceneData): number {
+  try {
+    const cuts = JSON.parse(s.shotStartsSec || "[]");
+    return Array.isArray(cuts) ? cuts.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function cutsOf(s: SceneData): number[] {
+  // relative cut positions (%) inside the scene block
+  try {
+    const cuts = JSON.parse(s.shotStartsSec || "[]") as number[];
+    const dur = Math.max(0.1, s.duration || 5);
+    return cuts.map((c) => Math.min(98, Math.max(2, (c - (s.startSec ?? 0)) / dur * 100)));
+  } catch {
+    return [];
+  }
+}
+
+function fmtTime(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
 function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: SceneData[] }) {
   const { dict } = useLang();
   const c = dict.studio.cards.analysis;
   const roles = c.roles || {};
   const totalDur = scenes.reduce((a, s) => a + (s.duration || 0), 0) || 1;
+  const stats = analysis.stats;
 
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4 md:p-5 space-y-4">
-        <div className="flex items-center gap-2 text-sm font-semibold">
+        <div className="flex items-center gap-2 text-sm font-semibold flex-wrap">
           <Clapperboard className="w-4 h-4 text-[#593dfa]" />
           {c.xray}
           {analysis.format && <Badge variant="secondary" className="text-xs">{analysis.format}</Badge>}
+          {stats && (
+            <span className="text-xs text-muted-foreground">
+              {stats.sceneCount} {c.scenes} · {stats.shotCount} {c.shots} · {stats.framework}
+            </span>
+          )}
         </div>
 
-        {/* timeline map — hook/demo/proof/cta beats with proportional widths */}
-        <div className="flex h-9 rounded-lg overflow-hidden border border-border text-[10px] font-semibold">
-          {scenes.map((s) => {
-            const pct = ((s.duration || 3) / totalDur) * 100;
-            const roleColor: Record<string, string> = {
-              hook: "bg-[#593dfa] text-white",
-              demo: "bg-[#2563eb] text-white",
-              proof: "bg-[#c026d3] text-white",
-              cta: "bg-[#d54123] text-white",
-            };
-            return (
-              <div
-                key={s.id}
-                className={`${roleColor[s.role] || "bg-muted text-muted-foreground"} flex items-center justify-center min-w-0 px-1 truncate`}
-                style={{ width: `${pct}%` }}
-                title={`${roles[s.role] || s.role} · ${Math.round(s.duration)}s`}
-              >
-                {roles[s.role] || s.role}
-              </div>
-            );
-          })}
+        {/* timeline map — beats with proportional widths + cut-point markers */}
+        <div className="relative">
+          <div className="flex h-9 rounded-lg overflow-hidden border border-border text-[10px] font-semibold">
+            {scenes.map((s) => {
+              const pct = ((s.duration || 3) / totalDur) * 100;
+              const roleColor: Record<string, string> = {
+                hook: "bg-[#593dfa] text-white",
+                demo: "bg-[#2563eb] text-white",
+                proof: "bg-[#c026d3] text-white",
+                cta: "bg-[#d54123] text-white",
+                problem: "bg-[#9333ea] text-white",
+                solution: "bg-[#0891b2] text-white",
+                agitate: "bg-[#ea580c] text-white",
+              };
+              return (
+                <div
+                  key={s.id}
+                  className={`${roleColor[s.role] || "bg-muted text-muted-foreground"} flex items-center justify-center min-w-0 px-1 truncate relative`}
+                  style={{ width: `${pct}%` }}
+                  title={`${roles[s.role] || s.role} · ${Math.round(s.duration)}s${shotsOf(s) ? ` · ${shotsOf(s)} ${c.cuts}` : ""}`}
+                >
+                  <span className="truncate">{roles[s.role] || s.role}</span>
+                  {/* Notch's shotStartsSec — internal cut markers */}
+                  {cutsOf(s).slice(1).map((cut, k) => (
+                    <span
+                      key={k}
+                      className="absolute top-0 bottom-0 w-px bg-white/40"
+                      style={{ insetInlineStart: `${cut}%` }}
+                    />
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          {/* scene timestamps under the map */}
+          <div className="flex justify-between text-[10px] text-muted-foreground mt-1" dir="ltr">
+            <span>0:00</span>
+            {scenes.slice(0, -1).map((s) => (
+              <span key={s.id}>{fmtTime(s.startSec ?? 0)}</span>
+            ))}
+            <span>{fmtTime(totalDur)}</span>
+          </div>
         </div>
+        {stats && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div className="rounded-lg bg-muted/50 p-2">
+              <div className="text-lg font-bold text-[#593dfa]">{stats.sceneCount}</div>
+              <div className="text-[10px] text-muted-foreground">{c.scenes}</div>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2">
+              <div className="text-lg font-bold text-[#2563eb]">{stats.shotCount}</div>
+              <div className="text-[10px] text-muted-foreground">{c.shots}</div>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2">
+              <div className="text-lg font-bold text-[#c026d3]">{stats.peopleCount}</div>
+              <div className="text-[10px] text-muted-foreground">{c.people}</div>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2">
+              <div className="text-lg font-bold text-[#d54123] text-xs leading-8">{stats.framework}</div>
+              <div className="text-[10px] text-muted-foreground">{c.framework}</div>
+            </div>
+          </div>
+        )}
         <div className="text-xs text-muted-foreground">
           {scenes.length} {c.scenes} · {Math.round(totalDur)} {c.seconds} · {c.format}: {analysis.format || "—"}
         </div>
@@ -797,6 +972,11 @@ function AnalysisCard({ analysis, scenes }: { analysis: AnalysisMeta; scenes: Sc
                 {s.camera && (
                   <p className="text-xs text-muted-foreground">
                     {c.camera}: {s.camera}
+                  </p>
+                )}
+                {shotsOf(s) > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {shotsOf(s)} {c.cuts} · {fmtTime(s.startSec ?? 0)} → {fmtTime(s.endSec ?? (s.startSec ?? 0) + s.duration)}
                   </p>
                 )}
                 {s.onScreenText && (
@@ -911,18 +1091,53 @@ function StoryboardCard({
   );
 }
 
-function ResultCard({ scenes }: { scenes: SceneData[] }) {
+function ResultCard({ scenes, project }: { scenes: SceneData[]; project: ProjectData | null }) {
   const { dict } = useLang();
   const c = dict.studio.cards.result;
   const done = scenes.filter((s) => s.status === "done" && s.videoUrl);
   if (!done.length) return null;
+
+  const assembly = (() => {
+    if (!project?.assembly) return null;
+    try {
+      return JSON.parse(project.assembly) as {
+        steps: { key: string; label: string; status: string; detail?: string }[];
+        aRollCount: number;
+        bRollCount: number;
+        totalDurationSec: number;
+      };
+    } catch {
+      return null;
+    }
+  })();
+
   return (
     <Card className="overflow-hidden border-border">
       <CardContent className="p-4 md:p-5 space-y-4">
-        <div className="flex items-center gap-2 text-sm font-semibold">
+        <div className="flex items-center gap-2 text-sm font-semibold flex-wrap">
           <Sparkles className="w-4 h-4 text-[#593dfa]" />
-          {c.title}
+          {project?.autoTitle ? project.autoTitle : c.assemblyTitle}
+          <Badge variant="secondary" className="text-xs">{c.aspect}</Badge>
         </div>
+
+        {/* assembly steps — Notch's packaging trace */}
+        {assembly && (
+          <div className="rounded-lg border border-border divide-y divide-border">
+            {assembly.steps.map((st) => (
+              <div key={st.key} className="flex items-center gap-2 px-3 py-1.5 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="font-medium">{st.label}</span>
+                {st.detail && <span className="text-muted-foreground">· {st.detail}</span>}
+              </div>
+            ))}
+            <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground">
+              <Badge variant="outline" className="text-[10px]">{assembly.aRollCount} {c.aRoll}</Badge>
+              <Badge variant="outline" className="text-[10px]">{assembly.bRollCount} {c.bRoll}</Badge>
+              <span>· {Math.round(assembly.totalDurationSec)}s</span>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {done.map((s) => (
             <div key={s.id} className="space-y-2">
@@ -944,7 +1159,130 @@ function ResultCard({ scenes }: { scenes: SceneData[] }) {
               </div>
             </div>
           ))}
+          {/* generated branded end card */}
+          {project?.endCardUrl && (
+            <div className="space-y-2">
+              <img src={project.endCardUrl} alt="end card" className="w-full rounded-lg border border-border" />
+              <span className="text-xs text-muted-foreground">{c.endCard}</span>
+            </div>
+          )}
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- INTAKE FORM (Product-Evidence Gate) ----------
+
+function IntakeFormCard({
+  form,
+  busy,
+  onSubmit,
+}: {
+  form: IntakeFormMeta;
+  busy: boolean;
+  onSubmit: (form: IntakeFormMeta, answers: Record<string, string>, attachments: Record<string, string>) => void;
+}) {
+  const { dict } = useLang();
+  const t = dict.studio.cards.intake;
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [attachments, setAttachments] = useState<Record<string, string>>({});
+  const fileRef = useRef<HTMLInputElement>(null);
+  const attachAspect = useRef<string | null>(null);
+
+  const allAnswered = form.fields.every(
+    (f) => (answers[f.id] ?? answers[f.aspect] ?? "").trim() || attachments[f.aspect]
+  );
+
+  return (
+    <Card className="overflow-hidden border-[#593dfa]/30">
+      <CardContent className="p-4 md:p-5 space-y-4">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Package className="w-4 h-4 text-[#593dfa]" />
+          {form.title}
+        </div>
+        {form.gateReason && (
+          <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-muted-foreground">
+            {form.gateReason}
+          </div>
+        )}
+        <div className="space-y-3">
+          {form.fields.map((f) => (
+            <div key={f.id} className="rounded-lg border border-border p-3 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-medium">{f.prompt}</span>
+                {f.required ? (
+                  <Badge variant="destructive" className="text-[10px]">{t.required}</Badge>
+                ) : (
+                  <Badge variant="secondary" className="text-[10px]">{t.optional}</Badge>
+                )}
+              </div>
+              {f.inputType === "text" && (
+                <Input
+                  value={answers[f.id] ?? ""}
+                  onChange={(e) => setAnswers((a) => ({ ...a, [f.id]: e.target.value }))}
+                  placeholder={t.typeHere}
+                />
+              )}
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={busy}
+                  onClick={() => {
+                    attachAspect.current = f.aspect;
+                    fileRef.current?.click();
+                  }}
+                >
+                  <Paperclip className="w-3.5 h-3.5 me-1.5" />
+                  {t.attach}
+                </Button>
+                {attachments[f.aspect] && (
+                  <div className="flex items-center gap-2">
+                    <img src={attachments[f.aspect]} alt={f.aspect} className="w-10 h-10 object-cover rounded border border-border" />
+                    <button
+                      className="text-xs text-red-500 hover:underline"
+                      onClick={() => setAttachments((a) => {
+                        const n = { ...a };
+                        delete n[f.aspect];
+                        return n;
+                      })}
+                    >
+                      {t.remove}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <Button
+          className="w-full btn-pill"
+          disabled={busy || !allAnswered}
+          onClick={() => onSubmit(form, answers, attachments)}
+        >
+          {busy ? <Loader2 className="w-4 h-4 animate-spin me-2" /> : <Package className="w-4 h-4 me-2" />}
+          {t.submit}
+        </Button>
+        <p className="text-xs text-muted-foreground text-center">{t.gateNote}</p>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            const aspect = attachAspect.current;
+            if (f && aspect) {
+              try {
+                const dataUrl = await downscaleImage(f);
+                setAttachments((a) => ({ ...a, [aspect]: dataUrl }));
+              } catch {}
+            }
+            e.target.value = "";
+          }}
+        />
       </CardContent>
     </Card>
   );
@@ -976,9 +1314,15 @@ function SpeechQaRow({ scene }: { scene: SceneData }) {
       return JSON.parse(scene.speechQa) as {
         transcript: string;
         wordCount: number;
+        durationMs?: number;
         pace: number;
+        paceTarget?: number;
+        playbackRate?: number;
+        trim?: { startMs: number; endMs: number; removedMs: number };
+        speechMap?: number[];
         passed: boolean;
         issues: string[];
+        qa?: { status: string; summary: string; issueCount: number };
       };
     } catch {
       return null;
@@ -987,21 +1331,57 @@ function SpeechQaRow({ scene }: { scene: SceneData }) {
 
   if (!qa) return null;
 
+  const durSec = qa.durationMs ? qa.durationMs / 1000 : 0;
+  const removedSec = qa.trim ? qa.trim.removedMs / 1000 : 0;
+  const rate = qa.playbackRate ?? 1;
+  const speechMap = qa.speechMap ?? [];
+
   return (
-    <div className={`rounded-lg border p-2.5 space-y-1 ${qa.passed ? "border-[#593dfa]/30 bg-[#593dfa]/5" : "border-amber-500/40 bg-amber-500/5"}`}>
+    <div className={`rounded-lg border p-2.5 space-y-2 ${qa.passed ? "border-[#593dfa]/30 bg-[#593dfa]/5" : "border-amber-500/40 bg-amber-500/5"}`}>
       <div className="flex items-center gap-2 flex-wrap text-xs">
         <Volume2 className="w-3.5 h-3.5 text-[#593dfa]" />
         <span className="font-semibold">{c.speechQa}</span>
         <span className="text-muted-foreground">
-          {qa.wordCount} {c.words} · {qa.pace} {c.wps}
+          {qa.wordCount} {c.words}{durSec ? ` · ${(durSec / 1).toFixed(1)}s` : ""}
         </span>
         <Badge
           variant="outline"
           className={`text-[10px] ${qa.passed ? "text-[#593dfa] border-[#593dfa]/40" : "text-amber-500 border-amber-500/40"}`}
         >
-          {qa.passed ? c.passed : c.failed}
+          {qa.passed ? (qa.qa?.summary || c.passed) : c.failed}
         </Badge>
       </div>
+
+      {speechMap.length > 0 && (
+        <div>
+          <div className="text-[10px] text-muted-foreground mb-1 flex items-center justify-between">
+            <span>{c.speechMap}</span>
+            <span>
+              {removedSec > 0 && (
+                <span className="me-2">{c.tightenTiming}: {(qa.trim!.startMs / 1000).toFixed(1)}s–{(qa.trim!.endMs / 1000).toFixed(1)}s · {removedSec.toFixed(1)}s {c.removed}</span>
+              )}
+              <span>{c.setPace}: {qa.pace} {c.wps} · {rate.toFixed(2)}×</span>
+            </span>
+          </div>
+          {/* per-word amplitude waveform — Notch's "Map speech" */}
+          <div className="flex items-end gap-[2px] h-8 rounded bg-background/60 border border-border/50 px-1 py-0.5" dir="ltr">
+            {speechMap.map((amp, i) => (
+              <div
+                key={i}
+                className="flex-1 min-w-[2px] rounded-sm bg-gradient-to-t from-[#593dfa] to-[#c026d3]"
+                style={{ height: `${Math.max(8, amp * 100)}%` }}
+                title={`#${i + 1}`}
+              />
+            ))}
+          </div>
+          {qa.paceTarget ? (
+            <div className="text-[10px] text-muted-foreground mt-0.5">
+              {c.targetWps}: {qa.paceTarget} {c.wps}
+            </div>
+          ) : null}
+        </div>
+      )}
+
       {qa.transcript && (
         <p className="text-[11px] text-muted-foreground leading-relaxed">“{qa.transcript}”</p>
       )}

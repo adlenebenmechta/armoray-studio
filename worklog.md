@@ -269,3 +269,62 @@ Stage Summary:
 - Avatar library (Higgsfield-style schema + 12 demo avatars + UI picker) fully implemented
 - All code committed and pushed to GitHub/Vercel
 - Final API list compiled below for user delivery
+
+---
+Task ID: 12 (full live pipeline capture)
+Agent: main
+Task: Re-enter Notch, run a complete reference-video cloning session from zero to final video, capture every secret of the video analysis method, then copy it into Armoray Studio
+
+Work Log:
+- Loaded saved session (notch-session.json), session still valid
+- Downloaded previous session's final ad from CDN as reference (70MB → compressed 4.4MB → trimmed 30s)
+- Started NEW chat in Notch: attached reference video + selected "Holy Strips" product + prompt
+  "Make me an ad exactly like this reference video for my product — same structure, same pacing, same style, but adapted to my product with a new script."
+- Captured the COMPLETE pipeline live:
+  1. UPLOAD: POST /api/v1/video-agent/upload/presigned-url → S3 direct upload to video-agent/sessions/{id}/footage/
+  2. PRE-STATE: 15 product images pre-downloaded into state.product.model.images with tags (packaging/in-use/lifestyle/in-hand) + productSystemNote: "Do NOT call research tool or fetchProductImages"
+  3. AGENT LOOP: thinking blocks (**Executing video workflow**...) + deferred tools (seedStoryboard, generateAllMedia, TaskCreate/TaskUpdate, updateSceneVideoElement, collectIssue, renderVideo)
+  4. REFERENCE X-RAY milestone schema (exact):
+     {type:"reference-xray", phase:"complete", stats:{framework:"Problem-Solution", shotCount:10, sceneCount:3, peopleCount:1},
+      video:{url, posterUrl, aspectRatio:"9:16", durationSec:30.1},
+      scenes:[{id:"scene-1-hook", role:"hook", startSec:0, endSec:6.7, shotStartsSec:[0,2.4,4.8], frameUrl:"...obs-scene-0.png"}],
+      subtitle:"3 scenes · 10 shots · Problem-Solution", frameProgress:{total:3, failed:0, succeeded:3}}
+     X-Ray substeps: "Read video, speech and cuts" → "Build scene structure" → "Save representative frames"
+  5. SEED STORYBOARD: "Seeded 3 scenes, 1 avatars from the reference ad" (copies structure directly from x-ray)
+  6. PRODUCT-EVIDENCE GATE: intake_form response with DYNAMIC fields:
+     {type:"intake_form", title:"A few Holy Strips details first", fields:[
+       {id:"product-size", aspect:"size", prompt:"Tin dimensions or scale photo", required:true, inputType:"text", attachment:"optional"},
+       {id:"open-mechanism", aspect:"open-mechanism", prompt:"How the tin opens", required:true, inputType:"text"},
+       {id:"contents", aspect:"contents", prompt:"Photo of tin open with strip", required:true, inputType:"none"}]}
+     Fields generated from what the reference demo scene REQUIRES (tin opening + strip taken)
+  7. OVERLAYS: agent reads overlays docs; schema supports overlay text (not auto-captions); all-caps segments,
+     white/black-stroke/yellow, matched to speech timing
+  8. SCENE GENERATION (Seedance confirmed: videos/generic/seedance/scene-X.mp4):
+     - updateSceneVideoElement calls with role/durationSeconds/dialogue plan lines/references
+     - 5 transient failures → auto-retry via collectIssue → 3 successes (auto-recovery confirmed)
+     - "First frames ready. Generating 3 planned scene videos" (parallel)
+     - "All media generated: 0 A-roll, 0 B-roll, 3 planned scene videos"
+  9. SPEECH QA per scene (speech-pass milestone schema exact):
+     {qa:{status:"pass", summary:"Dialogue and pronunciation checks passed", issueCount:0},
+      trim:{endMs:7059, startMs:79, removedMs:79},  // silence trimming
+      pacing:{playbackRate:1, wordsPerSecond:2.75, targetWordsPerSecond:3.2},
+      source:"spoken-video", audioUrl:".../transcriptions/scene-X.mp3",
+      speechMap:[0.675,0.836,...],  // per-word amplitude array
+      wordCount:19, durationMs:7059, transcript:"..."}
+     Speech card UI: word count · duration · transcript · "0.1s removed" · "2.8 words/s · 1.00×" · Listen back
+  10. ASSEMBLY: "A-roll trimmed" → "Audio check complete" → "Video assembly complete"
+      → "Generating end card" → "Assembled: 3 A-roll + 0 B-roll, 34s"
+  11. RENDER: renderVideo → renders/normalized-{ts}.mp4 (1080x1920 h264+aac, 33.9s)
+      → finishedMediaBatch response {title:"Your Holy Strips video ad", medias:[{role:"final", aspectRatio:"9:16", thumbnailUrl}]}
+  12. Session auto-titled: "Holy Strips: 4-Step Morning Energy Hack for Over 40s"
+- Tool-progress sequence captured: Storyboard updated → 5× Scene video update failed → 3× Scene video updated
+  → Scene transcription ready → A-roll trimmed → Audio check complete → Video assembly complete
+- Agent self-titled scene IDs follow reference roles: scene-1-hook, scene-2-demo, scene-3-solution
+- Final video downloaded and verified: 33.9s 1080x1920 (reference 30.1s → adapted 34s = same rhythm + end card)
+- Downloaded final ad to scripts/final-ad.mp4 for comparison
+
+Stage Summary:
+- COMPLETE zero-to-final pipeline captured with exact schemas for every milestone
+- Key new secrets: shotStartsSec cut points, intake_form dynamic evidence gate, speechMap per-word amplitude,
+  silence trim, A-roll/B-roll assembly counts, end card generation, auto-title, 5-failure auto-retry
+- Ready to implement all of these in Armoray Studio (analysis engine upgrade + intake form + speech QA upgrade + assembly)

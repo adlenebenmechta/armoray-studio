@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { analyzeVideoFrames } from "@/lib/ai/analysis";
+import { buildIntakeForm, gateMessage } from "@/lib/ai/evidence";
 
 const localeNames: Record<string, string> = { ar: "Arabic", en: "English", fr: "French" };
 
@@ -43,17 +44,41 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           onScreenText: s.onScreenText,
           duration: s.duration,
           isProductScene: s.isProductScene,
+          // Notch x-ray fields
+          startSec: s.startSec,
+          endSec: s.endSec,
+          shotStartsSec: JSON.stringify(s.shotStartsSec),
+          evidenceNeeded: JSON.stringify(s.productEvidenceNeeded ?? []),
         },
       });
     }
 
+    // ── PRODUCT-EVIDENCE GATE ──────────────────────────────────────────
+    // Notch holds generation when the reference demo requires product facts
+    // that are missing. Build the dynamic intake form from the x-ray.
+    const intakeForm = buildIntakeForm(analysis, {
+      name: project.productName,
+      productSize: project.productSize,
+      productFacts: project.productFacts,
+      productImage: project.productImage,
+    });
+
     const updated = await db.project.update({
       where: { id },
-      data: { refAnalysis: JSON.stringify(analysis), status: "analyzed" },
+      data: {
+        refAnalysis: JSON.stringify(analysis),
+        status: intakeForm ? "evidence_gate" : "analyzed",
+        evidenceGate: intakeForm ? JSON.stringify(intakeForm) : null,
+      },
       include: { scenes: { orderBy: { index: "asc" } } },
     });
 
-    return NextResponse.json({ project: updated, analysis });
+    return NextResponse.json({
+      project: updated,
+      analysis,
+      intakeForm,
+      gateMessage: intakeForm ? gateMessage(intakeForm, project.locale) : null,
+    });
   } catch (e: unknown) {
     console.error("analyze error", e);
     return NextResponse.json({ error: "analyze_failed" }, { status: 500 });

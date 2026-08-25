@@ -85,6 +85,56 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const allSettled = hasScenes && project.scenes.every((s) => s.status === "done" || s.status === "error");
     if (allSettled) {
       await db.project.update({ where: { id }, data: { status: "done" } });
+
+      // ── AUTO-ASSEMBLY (Notch's packaging stage) ────────────────────
+      // When every scene is done, run the final packaging: A-roll trim
+      // bookkeeping, audio check, end card, auto-title. Best effort —
+      // a failure here never blocks the done state.
+      try {
+        const fresh = await db.project.findUnique({
+          where: { id },
+          include: { scenes: { orderBy: { index: "asc" } } },
+        });
+        if (fresh && fresh.scenes.every((s) => s.status === "done")) {
+          const { assembleTimeline, generateEndCard, generateAutoTitle } = await import("@/lib/ai/assembly");
+          const assembly = assembleTimeline(
+            fresh.scenes.map((s) => ({
+              role: s.role,
+              duration: s.duration,
+              videoUrl: s.videoUrl,
+              speechQa: s.speechQa,
+              newVoiceover: s.newVoiceover,
+            })),
+            fresh.productName
+          );
+          if (assembly.endCardPrompt) {
+            assembly.endCardUrl = await generateEndCard(assembly.endCardPrompt);
+          }
+          const localeNames: Record<string, string> = { ar: "Arabic", en: "English", fr: "French" };
+          const autoTitle = await generateAutoTitle(
+            fresh.productName,
+            fresh.scenes.map((s) => ({
+              role: s.role,
+              duration: s.duration,
+              videoUrl: s.videoUrl,
+              speechQa: s.speechQa,
+              newVoiceover: s.newVoiceover,
+            })),
+            localeNames[fresh.locale] ?? "English"
+          );
+          await db.project.update({
+            where: { id },
+            data: {
+              assembly: JSON.stringify(assembly),
+              endCardUrl: assembly.endCardUrl,
+              autoTitle,
+              status: "packaged",
+            },
+          });
+        }
+      } catch (asmErr) {
+        console.error("auto-assembly skipped", asmErr);
+      }
     }
 
     const updated = await db.project.findUnique({

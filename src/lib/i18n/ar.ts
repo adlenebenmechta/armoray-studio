@@ -154,7 +154,8 @@ export const ar: Dictionary = {
         title: "تحليل البنية", hook: "الخطّاف", structure: "البنية الإقناعية", tone: "النبرة", pacing: "الإيقاع",
         scenes: "المشاهد", scene: "مشهد", camera: "الكاميرا", onScreen: "على الشاشة", productScene: "لقطة منتج", seconds: "ث",
         xray: "أشعة الفيديو المرجعي", format: "الصيغة",
-        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة" } as Record<string, string>,
+        shots: "لقطة", people: "أشخاص", framework: "الإطار الإقناعي", cuts: "قطعة",
+        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة", problem: "مشكلة", solution: "حل", agitate: "تحريض" } as Record<string, string>,
       },
       product: { title: "المنتج", edit: "تعديل" },
       storyboard: {
@@ -162,9 +163,19 @@ export const ar: Dictionary = {
         pending: "بالانتظار", generating: "جارٍ التوليد…", done: "جاهز", error: "فشل",
         speechQa: "فحص الصوت", words: "كلمة", wps: "كلمة/ث", passed: "ناجح", failed: "يحتاج محاولة أخرى",
         hookLine: "الخطّاف الجديد", ctaLine: "الدعوة الجديدة",
-        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة" } as Record<string, string>,
+        speechMap: "خريطة الكلام", tightenTiming: "شدّ التوقيت", setPace: "ضبط السرعة", listenBack: "إعادة الاستماع",
+        removed: "حُذفت", targetWps: "الهدف", evidence: "أدلة مطلوبة",
+        roles: { hook: "خطّاف", demo: "عرض", proof: "إثبات", cta: "دعوة", problem: "مشكلة", solution: "حل", agitate: "تحريض" } as Record<string, string>,
       },
-      result: { title: "إعلانك المستنسخ", download: "تحميل", sceneN: "مشهد" },
+      result: {
+        title: "إعلانك المستنسخ", download: "تحميل", sceneN: "مشهد",
+        assemblyTitle: "إعلانك المصوّر", finalVideo: "الفيديو النهائي", endCard: "بطاقة النهاية",
+        autoTitle: "عنوان الجلسة", aRoll: "مسار رئيسي", bRoll: "مسار مساعد", render: "اكتملت الرندرة", aspect: "9:16",
+      },
+      intake: {
+        required: "مطلوب", optional: "اختياري", attach: "إرفاق", attachFile: "إرفاق ملف",
+        typeHere: "اكتب هنا…", submit: "إرسال التفاصيل", gateNote: "سيواصل الوكيل بعد ردك.", remove: "إزالة",
+      },
     },
     productDialog: {
       title: "أضف منتجك",
@@ -197,7 +208,7 @@ export const ar: Dictionary = {
         pipelineText: "1) استخراج الإطارات والصوت ← 2) تحليل البنية بالذكاء البصري ← 3) إعادة كتابة السكريبت لمنتجك ← 4) توليد الفيديو مشهداً بمشهد (صورة-إلى-فيديو للقطات المنتج) ← 5) تجميع لوحة القصة مع التعليق الصوتي.",
       },
     },
-    status: { chat: "مسودة", analyzing: "جارٍ التحليل", analyzed: "مُحلَّل", adapting: "جارٍ التكييف", adapted: "لوحة القصة جاهزة", generating: "جارٍ التوليد", done: "مكتمل", error: "خطأ" },
+    status: { chat: "مسودة", analyzing: "جارٍ التحليل", analyzed: "مُحلَّل", adapting: "جارٍ التكييف", adapted: "لوحة القصة جاهزة", generating: "جارٍ التوليد", done: "مكتمل", error: "خطأ", evidence_gate: "أدلة المنتج", packaged: "مُغلَّف" },
     errors: {
       uploadFailed: "تعذر قراءة ملف الفيديو. جرّب MP4 بحجم أقل من 100MB.",
       analyzeFailed: "فشل التحليل. جرّب فيديو آخر.",

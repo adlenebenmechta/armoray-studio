@@ -11,6 +11,18 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     });
     if (!project) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
+    // ── PRODUCT-EVIDENCE GATE ────────────────────────────────────────
+    // Notch holds generation while the reference demo requires product
+    // facts that are still missing. Refuse to start until answered.
+    // (Checked FIRST — before the storyboard check — exactly like Notch
+    // holds the whole workflow at the checkpoint.)
+    if (project.evidenceGate) {
+      return NextResponse.json(
+        { error: "evidence_gate_open", evidenceGate: JSON.parse(project.evidenceGate) },
+        { status: 428 }
+      );
+    }
+
     const scenes = project.scenes.filter((s) => s.newPrompt && s.status !== "generating" && s.status !== "done");
     if (!scenes.length) return NextResponse.json({ error: "no_scenes" }, { status: 400 });
 

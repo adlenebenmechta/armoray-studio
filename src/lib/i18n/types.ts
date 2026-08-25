@@ -98,6 +98,7 @@ export interface Dictionary {
         title: string; hook: string; structure: string; tone: string; pacing: string;
         scenes: string; scene: string; camera: string; onScreen: string; productScene: string; seconds: string;
         xray: string; format: string; roles: Record<string, string>;
+        shots: string; people: string; framework: string; cuts: string;
       };
       product: { title: string; edit: string };
       storyboard: {
@@ -105,8 +106,18 @@ export interface Dictionary {
         pending: string; generating: string; done: string; error: string;
         speechQa: string; words: string; wps: string; passed: string; failed: string;
         hookLine: string; ctaLine: string; roles: Record<string, string>;
+        speechMap: string; tightenTiming: string; setPace: string; listenBack: string;
+        removed: string; targetWps: string; evidence: string;
       };
-      result: { title: string; download: string; sceneN: string };
+      result: {
+        title: string; download: string; sceneN: string;
+        assemblyTitle: string; finalVideo: string; endCard: string; autoTitle: string;
+        aRoll: string; bRoll: string; render: string; aspect: string;
+      };
+      intake: {
+        required: string; optional: string; attach: string; attachFile: string;
+        typeHere: string; submit: string; gateNote: string; remove: string;
+      };
     };
     productDialog: {
       title: string; desc: string; nameLabel: string; namePh: string; urlLabel: string; urlPh: string;
@@ -120,7 +131,7 @@ export interface Dictionary {
       brand: { title: string; subtitle: string; productName: string; productUrl: string; productDesc: string; notSet: string; editHere: string };
       settings: { title: string; subtitle: string; language: string; languageDesc: string; about: string; aboutText: string; pipeline: string; pipelineText: string };
     };
-    status: { chat: string; analyzing: string; analyzed: string; adapting: string; adapted: string; generating: string; done: string; error: string };
+    status: { chat: string; analyzing: string; analyzed: string; adapting: string; adapted: string; generating: string; done: string; error: string; evidence_gate: string; packaged: string };
     errors: {
       uploadFailed: string; analyzeFailed: string; adaptFailed: string; generateFailed: string;
       needVideo: string; needProduct: string; generic: string;
