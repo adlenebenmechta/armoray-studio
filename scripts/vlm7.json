@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the image provided, here is a description of the agent progress panel:\n\n**Top-Level Tasks and Statuses**\nThe panel displays a primary task card titled **\"Generate and quality-check the ad\"**. To the right of this title, there is a progress counter indicating **\"2 / 4\"**. The status of the overall task is marked as **\"Running\"**, indicated by a blue dot next to the word in the header bar.\n\n**Current Substep and Runtime**\nInside the task card, the specific current substep is described as **\"Collecting required product evidence\"**. The runtime for this specific action is tracked as **\"Running for 7:01\"**. A purple horizontal progress bar is visible beneath this text, showing that the process is actively ongoing.\n\n**Output Cards (Scene Videos)**\nAbove the main task card, there is a section for visual outputs labeled **\"Progress\"** with a dropdown arrow. It contains three placeholder cards representing generated content:\n*   **Card 1:** Labeled **\"Scene scene-1-hook video\"**\n*   **Card 2:** Labeled **\"Scene scene-2-demo video\"**\n*   **Card 3:** Labeled **\"Scene scene-3-solution...\"**\n\nDirectly above these cards, a status update reads: **\"Scene video updated\"**, accompanied by a green dot.\n\n**Speech QA / Quality Check Indicators**\nThe top-level task title explicitly includes quality assurance language, reading **\"Generate and quality-check the ad\"**. This indicates that the agent's current phase involves verifying the output quality.\n\n**Other Elements**\nAt the bottom of the panel, there is an input field with the placeholder text: **\"Send a message to the agent\"**.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787616362,
+  "id": "202608250805569aa380d89c8340fb",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202608250805569aa380d89c8340fb",
+  "usage": {
+    "completion_tokens": 363,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 938,
+    "prompt_tokens_details": {
+      "cached_tokens": 3
+    },
+    "total_tokens": 1301
+  }
+}

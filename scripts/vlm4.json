@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the provided image, there is **no agent activity/progress panel visible**. The current view shows the initial input and configuration stage of the \"Holy Strips\" project, where the user is required to provide details before the agent begins its work.\n\nHere is a detailed breakdown of what is currently displayed in that area:\n\n**Visible Steps/Tasks (Input Phase)**\n*   **Task 1:** \"How the tin opens\"\n    *   **Status:** Required (Pending Input)\n    *   **Progress:** 0/1 fields completed\n    *   **Details:** Text input field labeled \"Type here...\" with an optional attachment option.\n*   **Task 2:** \"Photo of tin open with strip\"\n    *   **Status:** Required (Pending Input)\n    *   **Progress:** 0/1 files attached\n    *   **Details:** File upload button labeled \"Attach file\".\n\n**Action Trigger**\n*   **Button:** \"Submit details\" (Currently inactive/greyed out until requirements are met).\n\n**Status Message**\n*   **Text:** \"Agent will continue after your reply.\"\n\n**Output Cards**\n*   **Count:** 0\n*   **Details:** No storyboard scenes, product cards, or x-ray beats have been generated yet.\n\n**Reasoning Text**\n*   **Quote:** None available. The agent has not yet started processing or generating reasoning text.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787615854,
+  "id": "202608250757267eb9ebffcd874094",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202608250757267eb9ebffcd874094",
+  "usage": {
+    "completion_tokens": 287,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 930,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1217
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the image provided, here is the description of the **Progress/Task Panel** and **Output Cards**:\n\n### Progress / Task Panel\n*   **Status Indicator:** A green dot followed by the text: **\"Scene video updated\"**\n*   **Section Header:** An icon resembling a heartbeat or activity line, followed by the text: **\"Progress\"** with a dropdown chevron (v).\n\n### Output Cards\nThere are three placeholder cards displayed in a row:\n\n1.  **Card 1:**\n    *   **Label:** \"Scene scene-1-hook video\"\n    *   **Visual:** Empty gray rectangle.\n2.  **Card 2:**\n    *   **Label:** \"Scene scene-2-demo video\"\n    *   **Visual:** Empty gray rectangle.\n3.  **Card 3:**\n    *   **Label:** \"Scene scene-3-solution...\"\n    *   **Visual:** Empty gray rectangle.\n\n### Active Task Card (Bottom)\nA detailed card showing the current generation step:\n*   **Header Icon:** A loading spinner (circle with 'C' shape).\n*   **Title:** **\"Generate and quality-check the ad\"**\n*   **Counter:** **\"2 / 4\"** (located at the top right of the card).\n*   **Substep Status:** **\"Collecting required product evidence · Running for 9:18\"**\n*   **Progress Bar:** A purple horizontal bar partially filled (approx. 80%).",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787616497,
+  "id": "2026082508081459820323efe14ce3",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026082508081459820323efe14ce3",
+  "usage": {
+    "completion_tokens": 310,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 928,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1238
+  }
+}

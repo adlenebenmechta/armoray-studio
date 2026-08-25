@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the agent activity/progress panel in the screenshot, here are the visible details:\n\n**Main Progress Section:**\n*   **Header/Context:** \"Building the scene map from the full reference\"\n*   **Step 1:**\n    *   **Task Name:** \"Read video, speech and cuts\"\n    *   **Status:** Completed (indicated by a green checkmark icon)\n*   **Step 2:**\n    *   **Task Name:** \"Build scene structure\"\n    *   **Status:** In progress (indicated by a spinning loader icon)\n*   **Step 3:**\n    *   **Task Name:** \"Save representative frames\"\n    *   **Status:** Pending (text is greyed out)\n\n**Expandable Activity Card:**\n*   **Card Title:** \"Analyze the reference ad\"\n*   **Reasoning/Status Text:** \"Analyzing the reference ad · Running for 0:56\"\n*   **Progress Counter:** \"0/4\"",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787615742,
+  "id": "202608250755418bdce7d08bfb45b3",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202608250755418bdce7d08bfb45b3",
+  "usage": {
+    "completion_tokens": 207,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 930,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1137
+  }
+}

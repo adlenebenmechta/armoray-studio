@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- Scene video updated\n- Scene scene-1-hook video\n- Scene scene-2-demo video\n- Scene scene-3-solution...\n- Generate and quality-check the ad",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787616505,
+  "id": "2026082508082488bb67014fe44a2b",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026082508082488bb67014fe44a2b",
+  "usage": {
+    "completion_tokens": 37,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 951,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 988
+  }
+}

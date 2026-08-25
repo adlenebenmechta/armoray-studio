@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the agent progress/task panel in the image, here are the details:\n\n**Top-Level Task:**\n*   **Task Name:** Generate and quality-check the ad\n*   **Status:** Running for 1:22\n*   **Counter:** 2/4\n\n**Current Substep:**\n*   **Substep:** Collecting required product evidence\n\n**New Output Cards:**\n*   **Avatar Generated:**\n    *   **Name:** Avatar speaker-1\n    *   **Status:** Generated\n*   **Current Working Step (Active):**\n    *   **Label:** Working... 1:13\n    *   **Text:** \"need to highlight key words. Since full captions in a single overlay could lead to poor line breaks, I'll aim for air-caps text with segments for emphasis while using proper timing. It's essential to read the overlays documentation and ensure the storyboard reflects the user's creative intent.\"",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1787616019,
+  "id": "20260825080017c681d2c7596a4a4e",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260825080017c681d2c7596a4a4e",
+  "usage": {
+    "completion_tokens": 194,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 927,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1121
+  }
+}
